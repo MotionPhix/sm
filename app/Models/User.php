@@ -49,4 +49,21 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    public function schools()
+    {
+        return $this->belongsToMany(School::class, 'school_users')
+            ->withPivot('role_id', 'is_active')
+            ->withTimestamps();
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->superAdmin !== null;
+    }
+
+    public function superAdmin()
+    {
+        return $this->hasOne(SuperAdmin::class);
+    }
 }

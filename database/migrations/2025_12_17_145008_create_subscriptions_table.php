@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('schools', function (Blueprint $table) {
+        Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $t->uuid('uuid')->unique();
-            $t->string('name');
-            $t->string('code')->nullable();
-            
-            table->string('email')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('location')->nullable();
 
+            $table->foreignId('school_id')
+                ->constrained()
+                ->cascadeOnDelete();
+        
+            $table->string('plan'); // basic, standard, premium
+            $table->date('starts_at');
+            $table->date('ends_at');
+        
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('schools');
+        Schema::dropIfExists('subscriptions');
     }
 };

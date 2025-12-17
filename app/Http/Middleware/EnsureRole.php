@@ -15,15 +15,19 @@ class EnsureRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        $user = $request->user();
-        $school = app('school.context')->model;
-        abort_unless($user && $school, 403);
-        $has = \DB::table('school_user')
-            ->where('school_id', $school->id)
-            ->where('user_id', $user->id)
-            ->whereIn('role', $roles)
-            ->exists();
-        abort_unless($has, 403);
+        $schoolId = session('school_id');
+
+        $role = auth()->user()
+            ->schools()
+            ->where('schools.id', $schoolId)
+            ->first()
+            ->pivot
+            ->role_id;
+
+        if (!in_array(Role::find($role)->name, $roles)) {
+            abort(403);
+        }
+
         return $next($request);
     }
 }
