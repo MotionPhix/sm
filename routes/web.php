@@ -1,5 +1,8 @@
 <?php
 
+
+use App\Http\Controllers\Auth\AdminRegistrationController;
+use App\Http\Controllers\OnboardingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -13,5 +16,21 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('guest')->group(function () {
+    Route::get(
+        '/admin-register', 
+        [AdminRegistrationController::class, 'create']
+    )->name('admin.register.create');
+    Route::post(
+        '/admin-register', 
+        [AdminRegistrationController::class, 'store']
+    )->name('admin.register.store');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/onboarding', [OnboardingController::class, 'start'])
+        ->name('onboarding.start');
+});
 
 require __DIR__.'/settings.php';

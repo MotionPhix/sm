@@ -7,16 +7,16 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
-import { store } from '@/routes/register';
+import { store } from '@/routes/admin/register';
 import { Form, Head } from '@inertiajs/vue3';
 </script>
 
 <template>
     <AuthBase
-        title="Create an account"
-        description="Enter your details below to create your account"
+        title="Create admin account"
+        description="Register to start managing your school"
     >
-        <Head title="Register" />
+        <Head title="Admin Registration" />
 
         <Form
             v-bind="store.form()"
@@ -87,8 +87,7 @@ import { Form, Head } from '@inertiajs/vue3';
                     class="mt-2 w-full"
                     tabindex="5"
                     :disabled="processing"
-                    data-test="register-user-button"
-                >
+                    data-test="register-user-button">
                     <Spinner v-if="processing" />
                     Create account
                 </Button>
@@ -99,9 +98,9 @@ import { Form, Head } from '@inertiajs/vue3';
                 <TextLink
                     :href="login()"
                     class="underline underline-offset-4"
-                    :tabindex="6"
-                    >Log in</TextLink
-                >
+                    :tabindex="6">
+                    Log in
+                </TextLink>
             </div>
         </Form>
     </AuthBase>

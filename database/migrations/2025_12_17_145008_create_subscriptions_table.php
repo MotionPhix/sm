@@ -19,9 +19,17 @@ return new class extends Migration
                 ->cascadeOnDelete();
         
             $table->string('plan'); // basic, standard, premium
-            $table->date('starts_at');
-            $table->date('ends_at');
-        
+            $table->decimal('amount', 10, 2);
+            $table->string('currency')->default('MWK');
+
+            $table->string('status'); // 'pending', 'active', 'expired', 'cancelled'
+
+            $table->string('payment_provider')->nullable(); // paychangu
+            $table->string('provider_reference')->nullable();
+
+            $table->timestamp('starts_at')->nullable();
+            $table->timestamp('ends_at')->nullable();
+
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
