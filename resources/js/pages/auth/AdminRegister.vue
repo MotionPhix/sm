@@ -13,9 +13,9 @@ import { Form, Head } from '@inertiajs/vue3';
 
 <template>
     <AuthBase
-        title="Create admin account"
-        description="Register to start managing your school"
-    >
+        title="Create your administrator account"
+        description="This account will own and manage your schools">
+        
         <Head title="Admin Registration" />
 
         <Form

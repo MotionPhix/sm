@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('schools', function (Blueprint $table) {
             $table->id();
-            $t->uuid('uuid')->unique();
-            $t->string('name');
-            $t->string('code')->nullable();
+            $table->uuid('uuid')->unique()->nullable();
+            $table->string('name');
+            $table->string('code')->unique()->nullable();
+            $table->string('type')->default('primary'); // primary, secondary, private, etc
             
-            table->string('email')->nullable();
+            $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->string('location')->nullable();
+            
+            $table->string('district')->nullable();
+            $table->string('country')->default('Malawi');
 
             $table->boolean('is_active')->default(false);
             $table->timestamp('activated_at')->nullable();

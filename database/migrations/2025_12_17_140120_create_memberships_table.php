@@ -15,11 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('school_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('role', [
-                'admin','teacher','parent','student','bursar','head_teacher'
-            ]);
+            $table->string('role'); //['admin','teacher','parent','student','bursar','head_teacher']);
             $table->json('permissions')->nullable();
-            $table->timestamps();
 
             $table->unique(['school_id','user_id']);
             $table->timestamps();

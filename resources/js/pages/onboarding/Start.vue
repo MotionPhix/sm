@@ -1,8 +1,13 @@
+<script setup lang="ts">
+    import { Head } from '@inertiajs/vue3'
+</script>
+    
 <template>
-    <div class="min-h-screen flex items-center justify-center">
-        <div class="max-w-md text-center space-y-4">
-            <h1 class="text-3xl font-bold">Welcome</h1>
-            <p>You need to create a school to continue.</p>
-        </div>
+    <Head title="Onboarding" />
+
+    <div class="p-10 text-center">
+        <h1 class="text-2xl font-semibold">
+            Welcome! Let's set up your first school.
+        </h1>
     </div>
 </template>

@@ -57,6 +57,11 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function ownedSchools()
+    {
+        return $this->schools()->wherePivot('role', 'admin');
+    }
+
     public function isSuperAdmin(): bool
     {
         return $this->superAdmin !== null;

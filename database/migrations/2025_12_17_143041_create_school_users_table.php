@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->foreignId('school_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            
             $table->foreignId('role_id')->constrained();
 
             $table->boolean('is_active')->default(true);
