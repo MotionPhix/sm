@@ -36,6 +36,6 @@ class AdminRegistrationController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('onboarding.start');
+        return redirect()->route('onboarding.school-setup.create');
     }
 }

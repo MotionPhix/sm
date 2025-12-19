@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -52,14 +53,14 @@ class User extends Authenticatable
 
     public function schools()
     {
-        return $this->belongsToMany(School::class, 'school_users')
+        return $this->belongsToMany(School::class, 'school_user')
             ->withPivot('role_id', 'is_active')
             ->withTimestamps();
     }
 
     public function ownedSchools()
     {
-        return $this->schools()->wherePivot('role', 'admin');
+        return $this->schools()->wherePivot('role_id', Role::where('name', 'admin')->first()->id);
     }
 
     public function isSuperAdmin(): bool

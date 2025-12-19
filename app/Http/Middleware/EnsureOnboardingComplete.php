@@ -21,7 +21,7 @@ class EnsureOnboardingComplete
             !$request->routeIs('onboarding.*') &&
             !$request->routeIs('admin.register*')
         ) {
-            return redirect()->route('onboarding.start');
+            return redirect()->route('onboarding.school-setup.create');
         }
 
         return $next($request);

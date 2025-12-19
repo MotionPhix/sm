@@ -7,12 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class School extends Model
 {
     protected $fillable = [
-        'name', 'code', 'email', 'phone', 'location', 'is_active'
+        'name', 
+        'code', 
+        'email', 
+        'phone', 
+        'is_active',
+        'activated_at',
+        'type', // primary, secondary, private, etc
+        'district',
+        'country', // Malawi, Zambia, Tanzania, etc
     ];
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'school_users')
+        return $this->belongsToMany(User::class, 'school_user')
             ->withPivot('role_id', 'is_active')
             ->withTimestamps();
     }

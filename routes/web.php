@@ -2,7 +2,7 @@
 
 
 use App\Http\Controllers\Auth\AdminRegistrationController;
-use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\Onboarding\SchoolSetupController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -14,7 +14,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('dashboard/Index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('guest')->group(function () {
@@ -29,8 +29,11 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/onboarding', [OnboardingController::class, 'start'])
-        ->name('onboarding.start');
+    Route::get('/onboarding/school-setup', [SchoolSetupController::class, 'create'])
+        ->name('onboarding.school-setup.create');
+
+    Route::post('/onboarding/school-setup', [SchoolSetupController::class, 'store'])
+        ->name('onboarding.school-setup.store');
 });
 
 require __DIR__.'/settings.php';
