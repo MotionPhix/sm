@@ -37,6 +37,6 @@ class SchoolSetupController extends Controller
             'role_id' => Role::where('name', 'admin')->first()->id,
         ]);
 
-        return redirect()->route('dashboard');
+        return to_route('home');
     }
 }

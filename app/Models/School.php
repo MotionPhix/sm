@@ -38,6 +38,9 @@ class School extends Model
     public function admins()
     {
         return $this->users()
-            ->wherePivot('role_id', Role::where('name', 'admin')->first()->id);
+            ->whereHas('schools', function ($q) {
+                $q->where('role_id', Role::where('name', Role::ADMIN)->value('id'));
+            });
     }
+
 }

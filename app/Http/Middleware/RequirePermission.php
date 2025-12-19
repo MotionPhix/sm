@@ -6,21 +6,19 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureActiveSubscription
+class RequirePermission
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $permission): Response
     {
-        $school = app('currentSchool');
-
-        if (!$school->subscription?->is_active ||
-            $school->subscription->ends_at->isPast()) {
-            abort(402, 'Subscription expired.');
-        }
+        abort_unless(
+            $request->user()?->hasPermission($permission),
+            403
+        );
 
         return $next($request);
     }

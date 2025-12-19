@@ -11,19 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('school_invitations', function (Blueprint $table) {
-            $table->id();
-
+        Schema::create('permission_user', function (Blueprint $table) {
+            $table->foreignId('permission_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('school_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('role_id')->constrained();
-
-            $table->string('email');
-            $table->string('token')->unique();
-
-            $table->timestamp('expires_at');
-            $table->timestamp('accepted_at')->nullable();
-
-            $table->timestamps();
+            $table->primary(['permission_id', 'user_id', 'school_id']);
         });
     }
 
@@ -32,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('school_invitations');
+        Schema::dropIfExists('permission_user');
     }
 };

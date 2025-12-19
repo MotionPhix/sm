@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureRole
+class EnsureUserHasRole
 {
     /**
      * Handle an incoming request.
@@ -15,17 +15,14 @@ class EnsureRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        $schoolId = session('school_id');
+        $user = $request->user();
 
-        $role = auth()->user()
-            ->schools()
-            ->where('schools.id', $schoolId)
-            ->first()
-            ->pivot
-            ->role_id;
+        if (! $user) {
+            abort(401);
+        }
 
-        if (!in_array(Role::find($role)->name, $roles)) {
-            abort(403);
+        if (! $user->hasAnyRole($roles)) {
+            abort(403, 'Unauthorized role.');
         }
 
         return $next($request);

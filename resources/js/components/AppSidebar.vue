@@ -10,20 +10,23 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Folder } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { usePage } from '@inertiajs/vue3'
+import { navigation } from '@/navigation'
+import SchoolSwitcher from '@/components/SchoolSwitcher.vue'
+import { computed } from 'vue'
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+const page = usePage()
+
+const mainNavItems = computed(() => {
+  const role = page.props.auth?.user?.role
+  return role && navigation[role] ? navigation[role] : []
+})
 
 const footerNavItems: NavItem[] = [
     {
@@ -42,16 +45,10 @@ const footerNavItems: NavItem[] = [
 <template>
     <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
-                            <AppLogo />
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
+            <SchoolSwitcher />
         </SidebarHeader>
+
+        <SidebarSeparator />
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />

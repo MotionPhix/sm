@@ -2,34 +2,37 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\School;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureSchoolContext
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        // Resolve school by route param school or by session/current selection
-        $schoolId = $request->route('school') ?? session('school_id');
+        $user = $request->user();
 
-        if (!$schoolId) {
-            abort(403, 'No school context selected.');
+        if (! $user) {
+            abort(401);
         }
 
-        if (!auth()->user()
-            ->schools()
-            ->where('schools.id', $schoolId)
+        if (! $user->active_school_id) {
+            abort(403, 'No active school selected.');
+        }
+
+        // Ensure user belongs to the active school
+        if (! $user->schools()
+            ->where('schools.id', $user->active_school_id)
             ->exists()) {
             abort(403, 'Unauthorized school access.');
         }
 
-        app()->instance('currentSchool', School::findOrFail($schoolId));
+        // Bind current school globally
+        app()->instance(
+            'currentSchool',
+            School::findOrFail($user->active_school_id)
+        );
 
         return $next($request);
     }

@@ -20,6 +20,10 @@
             <h1 class="text-2xl font-semibold">
                 Dashboard (School Context Coming Next)
             </h1>
+
+            <pre>
+                {{ $page.props.activeSchool }}
+            </pre>
         </AppLayout>
     </template>
     

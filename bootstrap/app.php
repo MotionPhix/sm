@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsureHasActiveSchool;
+use App\Http\Middleware\EnsureSchoolContext;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -21,7 +23,15 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            EnsureHasActiveSchool::class,
         ]);
+
+        $middleware->alias([
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+            'school.context' => EnsureSchoolContext::class,
+            'permission' => \App\Http\Middleware\EnsureHasPermission::class,
+        ]);
+        
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
