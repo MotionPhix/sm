@@ -35,6 +35,16 @@ class School extends Model
         return $this->hasOne(Subscription::class);
     }
 
+    public function academicYears()
+    {
+        return $this->hasMany(AcademicYear::class);
+    }
+
+    public function currentAcademicYear()
+    {
+        return $this->hasOne(AcademicYear::class)->where('is_current', true);
+    }
+
     public function admins()
     {
         return $this->users()

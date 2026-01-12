@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dashboard } from '@/routes';
+import { Button } from '@/components/ui/button';
 import { create as createSchoolSetup } from '@/routes/onboarding/school-setup';
 import { Head, Link } from '@inertiajs/vue3';
 </script>
@@ -17,19 +17,10 @@ import { Head, Link } from '@inertiajs/vue3';
         >
             <nav class="flex items-center justify-end gap-4">
                 <Link
-                    v-if="$page.props.auth.user"
-                    :href="dashboard()"
-                    class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                >
-                    Dashboard
+                    :as="Button"
+                    :href="createSchoolSetup.url()">
+                    Add School
                 </Link>
-                <template v-else>
-                    <Link
-                        :href="createSchoolSetup.url()"
-                        class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]">
-                        Create your school
-                    </Link>
-                </template>
             </nav>
         </header>
         <div

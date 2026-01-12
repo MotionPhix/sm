@@ -2,6 +2,7 @@
 
 namespace App\Http\Responses;
 
+use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 class LoginResponse implements LoginResponseContract
@@ -32,12 +33,32 @@ class LoginResponse implements LoginResponseContract
         // Role-based landing (future-proof)
         $role = $user->roleForActiveSchool()?->name;
 
-        return match ($role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'head_teacher', 'teacher' => redirect()->route('teacher.dashboard'),
-            'parent' => redirect()->route('parent.dashboard'),
-            'student' => redirect()->route('student.dashboard'),
-            default => redirect()->route('dashboard'),
-        };
+        /*return match ($role) {
+            'admin' => to_route('admin.dashboard'),
+            'head_teacher', 'teacher' => to_route('teacher.dashboard'),
+            'registrar' => to_route('registrar.dashboard'),
+            'bursar' => to_route('bursar.dashboard'),
+            'accountant' => to_route('accountant.dashboard'),
+            'parent' => to_route('parent.dashboard'),
+            'student' => to_route('student.dashboard'),
+            default => to_route('dashboard'),
+        };*/
+
+        $routeMap = [
+            'admin'        => 'admin.dashboard',
+            'head_teacher' => 'teacher.dashboard',
+            'teacher'      => 'teacher.dashboard',
+            'registrar'    => 'registrar.dashboard',
+            'bursar'       => 'bursar.dashboard',
+            'accountant'   => 'accountant.dashboard',
+            'parent'       => 'parent.dashboard',
+            'student'      => 'student.dashboard',
+        ];
+
+        $target = $routeMap[$role] ?? 'admin.dashboard';
+
+        return Route::has($target)
+            ? to_route($target)
+            : to_route('dashboard');
     }
 }

@@ -7,15 +7,10 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
     SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
 import { BookOpen, Folder } from 'lucide-vue-next';
-import AppLogo from './AppLogo.vue';
 import { usePage } from '@inertiajs/vue3'
 import { navigation } from '@/navigation'
 import SchoolSwitcher from '@/components/SchoolSwitcher.vue'

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureHasActiveAcademicYear;
 use App\Http\Middleware\EnsureHasActiveSchool;
 use App\Http\Middleware\EnsureSchoolContext;
 use App\Http\Middleware\HandleAppearance;
@@ -29,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
             'school.context' => EnsureSchoolContext::class,
+            'academic' => EnsureHasActiveAcademicYear::class,
             'permission' => \App\Http\Middleware\EnsureHasPermission::class,
         ]);
         

@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Models\Role;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
@@ -52,7 +56,7 @@ class User extends Authenticatable
         ];
     }
 
-    public function schools()
+    public function schools(): BelongsToMany
     {
         return $this->belongsToMany(School::class, 'school_user')
             ->withPivot('role_id', 'is_active')
@@ -64,12 +68,7 @@ class User extends Authenticatable
         return $this->schools()->wherePivot('role_id', Role::where('name', 'admin')->first()->id);
     }
 
-    public function activeSchool()
-    {
-        return $this->belongsTo(School::class, 'active_school_id');
-    }
-
-    public function permissions()
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class)
             ->withPivot('school_id');
@@ -79,6 +78,11 @@ class User extends Authenticatable
     {
         $this->active_school_id = $school->id;
         $this->save();
+    }
+
+    public function activeSchool(): BelongsTo
+    {
+        return $this->belongsTo(School::class, 'active_school_id');
     }
 
     public function roleForActiveSchool(): ?Role
@@ -159,7 +163,15 @@ class User extends Authenticatable
             ?->permissions()
             ->where('name', $permission)
             ->exists() ?? false;
-            }
+    }
 
+    #[Scope]
+    protected function teachersForActiveSchool(Builder $query): void
+    {
+        $query->whereHas('schools', function ($q) {
+            $q->where('schools.id', auth()->user()?->active_school_id)
+                ->whereHas('pivotRole', fn ($role) => $role->where('name', 'teacher'));
+        });
+    }
 
 }

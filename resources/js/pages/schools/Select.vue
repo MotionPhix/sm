@@ -20,12 +20,10 @@
                     name="school_id"
                     :value="school.id"
                     class="w-full"
-                    variant="outline"
-                >
+                    variant="outline">
                     {{ school.name }}
                 </Button>
             </div>
         </form>
     </div>
 </template>
-    

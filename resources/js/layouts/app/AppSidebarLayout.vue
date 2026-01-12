@@ -17,9 +17,32 @@ withDefaults(defineProps<Props>(), {
 <template>
     <AppShell variant="sidebar">
         <AppSidebar />
-        <AppContent variant="sidebar" class="overflow-x-hidden">
-            <AppSidebarHeader :breadcrumbs="breadcrumbs" />
-            <slot />
+
+        <AppContent
+            variant="sidebar" class="overflow-hidden">
+            <AppSidebarHeader :breadcrumbs="breadcrumbs">
+                <template #actions>
+                    <slot name="act" />
+                </template>
+            </AppSidebarHeader>
+
+            <div
+                class="flex absolute top-16 flex-col inset-0 overflow-y-auto scrollbar-thin p-5">
+                <slot />
+            </div>
         </AppContent>
+
+<!--        <AppContent-->
+<!--            variant="sidebar"-->
+<!--            class="overflow-x-hidden">-->
+<!--            <AppSidebarHeader-->
+<!--                :breadcrumbs="breadcrumbs">-->
+<!--                <template #actions>-->
+<!--                    <slot name="actions" />-->
+<!--                </template>-->
+<!--            </AppSidebarHeader>-->
+
+<!--            <slot />-->
+<!--        </AppContent>-->
     </AppShell>
 </template>
