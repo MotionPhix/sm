@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Term;
+use App\Models\Concerns\TenantScoped as TenantScope;
 
 class AcademicYear extends Model
 {
@@ -21,6 +23,18 @@ class AcademicYear extends Model
         'is_current' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new TenantScope);
+
+        // Ensure school_id is set for new records if missing
+        static::creating(function (self $model) {
+            if (empty($model->school_id) && app()->bound('currentSchool')) {
+                $model->school_id = app('currentSchool')->id;
+            }
+        });
+    }
+
     public function school()
     {
         return $this->belongsTo(School::class);
@@ -29,6 +43,11 @@ class AcademicYear extends Model
     public function admissionCycles(): HasMany
     {
         return $this->hasMany(AdmissionCycle::class);
+    }
+
+    public function terms(): HasMany
+    {
+        return $this->hasMany(Term::class)->orderBy('sequence');
     }
 
     public function isPast(): bool

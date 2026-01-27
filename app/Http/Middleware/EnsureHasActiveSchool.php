@@ -24,6 +24,13 @@ class EnsureHasActiveSchool
         'verification.send',
         'onboarding.school-setup.create',
         'onboarding.school-setup.store',
+        'onboarding.classes.create',
+        'onboarding.classes.store',
+        'onboarding.streams.create',
+        'onboarding.streams.store',
+        'onboarding.subjects.create',
+        'onboarding.subjects.store',
+        'api.onboarding.*',
         'schools.select.*',
     ];
 
@@ -34,14 +41,18 @@ class EnsureHasActiveSchool
      */
     public function handle(Request $request, Closure $next): Response
     {
-
         if (! $request->user()) {
             return $next($request);
         }
 
-        if ($request->route() &&
-            in_array($request->route()->getName(), $this->exceptRoutes, true)) {
-            return $next($request);
+        // Check if route is in except list (supports wildcards)
+        if ($request->route()) {
+            $routeName = $request->route()->getName();
+            foreach ($this->exceptRoutes as $exceptRoute) {
+                if ($request->routeIs($exceptRoute)) {
+                    return $next($request);
+                }
+            }
         }
 
         $user = $request->user();

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Onboarding;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Onboarding\StoreSchoolRequest;
 use App\Models\AcademicYear;
 use App\Models\School;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -19,14 +19,9 @@ class SchoolSetupController extends Controller
         return Inertia::render('onboarding/CreateSchool');
     }
 
-    public function store(Request $request)
+    public function store(StoreSchoolRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'string'],
-            'district' => ['nullable', 'string'],
-            'country' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request) {
             $school = School::create([
@@ -34,6 +29,8 @@ class SchoolSetupController extends Controller
                 'type' => $validated['type'],
                 'district' => $validated['district'],
                 'country' => $validated['country'],
+                'email' => $validated['email'] ?? null,
+                'phone' => $validated['phone'] ?? null,
                 'code' => Str::upper(Str::random(8)),
             ]);
 
@@ -46,7 +43,7 @@ class SchoolSetupController extends Controller
             $this->createInitialAcademicYear($school);
         });
 
-        return to_route('admin.dashboard');
+        return to_route('onboarding.classes.create');
     }
 
     private function createInitialAcademicYear(School $school): void
@@ -56,12 +53,14 @@ class SchoolSetupController extends Controller
         $startYear = $currentYear - 1;
         $endYear = $currentYear;
 
-        AcademicYear::create([
+        $year = AcademicYear::create([
             'school_id' => $school->id,
             'name' => "{$startYear}/{$endYear}",
-            'starts_at' => Carbon::create($startYear, 9, 1), // configurable later
+            'starts_at' => Carbon::create($startYear, 9, 1),
             'ends_at' => Carbon::create($endYear, 8, 31),
             'is_current' => true,
         ]);
+
+        app(\App\Services\AcademicYearService::class)->createDefaultTerms($year);
     }
 }

@@ -21,25 +21,34 @@ class RolePermissionSeeder extends Seeder
             ],
 
             'head_teacher' => [
-                'dashboard.view',
-                'students.view',
-                'teachers.view',
-                'classes.view',
-                'subjects.view',
-                'exams.view',
-                'exams.view-marks',
-                'grading.view',
-                'reports.view',
-                'reports.generate',
+            'dashboard.view',
+            'students.view',
+            'teachers.view',
+            'classes.view',
+            'subjects.view',
+            'exams.view',
+            'exams.view-marks',
+            'grading.view',
+            'reports.view',
+            'reports.generate',
+            // Attendance
+            'attendance.view',
+            'attendance.record',
+            'attendance.export',
+            // Terms
+            'terms.view',
             ],
-
+            
             'teacher' => [
-                'dashboard.view',
-                'students.view',
-                'classes.view',
-                'subjects.view',
-                'exams.view',
-                'exams.enter-marks',
+            'dashboard.view',
+            'students.view',
+            'classes.view',
+            'subjects.view',
+            'exams.view',
+            'exams.enter-marks',
+            // Attendance
+            'attendance.view',
+            'attendance.record',
             ],
 
             'registrar' => [
@@ -51,6 +60,10 @@ class RolePermissionSeeder extends Seeder
                 'guardians.view',
                 'guardians.create',
                 'guardians.edit',
+                // Attendance (view)
+                'attendance.view',
+                // Terms (view)
+                'terms.view',
             ],
 
             'bursar' => [
@@ -62,6 +75,9 @@ class RolePermissionSeeder extends Seeder
                 'payments.create',
                 'payments.generate-receipt',
                 'reports.view',
+                // Attendance (view/export optional for finance summaries)
+                'attendance.view',
+                'attendance.export',
             ],
 
             'parent' => [

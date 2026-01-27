@@ -5,9 +5,11 @@ import {
     Wallet,
     GraduationCap,
     Settings,
+    Calendar,
+    ClipboardCheck,
   } from 'lucide-vue-next'
   import type { NavItem } from '@/types'
-  
+
   export const navigation = {
     admin: <NavItem[]>[
       { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
@@ -16,15 +18,19 @@ import {
       { title: 'Fees & Billing', href: '/admin/billing', icon: Wallet },
       { title: 'Settings', href: '/admin/settings', icon: Settings },
     ],
-  
+
     head_teacher: <NavItem[]>[
       { title: 'Dashboard', href: '/teacher/dashboard', icon: LayoutGrid },
+      { title: 'Timetable', href: '/teacher/timetable', icon: Calendar },
+      { title: 'Attendance', href: '/teacher/attendance', icon: ClipboardCheck },
       { title: 'Classes', href: '/teacher/classes', icon: BookOpen },
       { title: 'Students', href: '/teacher/students', icon: GraduationCap },
     ],
-  
+
     teacher: <NavItem[]>[
       { title: 'Dashboard', href: '/teacher/dashboard', icon: LayoutGrid },
+      { title: 'Timetable', href: '/teacher/timetable', icon: Calendar },
+      { title: 'Attendance', href: '/teacher/attendance', icon: ClipboardCheck },
       { title: 'My Classes', href: '/teacher/classes', icon: BookOpen },
     ],
   

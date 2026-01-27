@@ -33,6 +33,15 @@ class PermissionSeeder extends Seeder
 
             'grading.view', 'grading.configure',
 
+            // Attendance
+            'attendance.view', 'attendance.record', 'attendance.export',
+
+            // Timetable
+            'timetable.view', 'timetable.manage', 'timetable.create', 'timetable.edit', 'timetable.delete',
+
+            // Terms
+            'terms.view', 'terms.create', 'terms.edit', 'terms.delete',
+
             'fees.view', 'fees.create', 'fees.edit', 'fees.delete',
             'payments.view', 'payments.create', 'payments.edit', 'payments.delete', 'payments.generate-receipt',
 
