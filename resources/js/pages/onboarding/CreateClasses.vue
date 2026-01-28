@@ -107,8 +107,7 @@ const goBack = () => {
                     <div
                         v-for="(classItem, index) in classes"
                         :key="index"
-                        class="flex gap-2 items-end"
-                    >
+                        class="flex gap-2 items-end">
                         <Field
                             :data-invalid="classErrors[index]?.name"
                             class="flex-1">
@@ -119,16 +118,15 @@ const goBack = () => {
                                 :id="`class-name-${index}`"
                                 v-model="classItem.name"
                                 name="name"
-                                placeholder="e.g., Grade 1, Form 2, Class A"
+                                placeholder="e.g., Standard 1, Grade 1, Form 2, Class A"
                                 required
                             />
                             <InputError :message="classErrors[index]?.name" />
                         </Field>
 
                         <Field
-                            :data-invalid="classErrors[index]?.order"
-                            class="w-20"
-                        >
+                            :data-invalid="classErrors[index]?.order ? true : false"
+                            class="w-20">
                             <FieldLabel :for="`class-order-${index}`">
                                 Order
                             </FieldLabel>
@@ -171,7 +169,7 @@ const goBack = () => {
             <Separator class="my-6" />
 
             <div class="flex justify-between items-center">
-                <Button
+                <!-- <Button
                     type="button"
                     variant="ghost"
                     @click="goBack"
@@ -180,13 +178,13 @@ const goBack = () => {
                     size="sm">
                     <ChevronLeft />
                     Back
-                </Button>
+                </Button> -->
 
                 <Button 
                     type="submit"
-                    size="lg">
+                    size="lg" class="ml-auto">
                     Continue
-                    <ArrowRight class="w-4 h-4 ml-2" />
+                    <ArrowRight class="ml-2" />
                 </Button>
             </div>
         </form>

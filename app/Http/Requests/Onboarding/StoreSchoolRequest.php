@@ -22,7 +22,7 @@ class StoreSchoolRequest extends FormRequest
             'region' => ['required', 'string', 'max:100'],
             'district' => ['required', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'phone' => ['nullable', 'phone:INTERNATIONAL,!mobile'],
         ];
     }
 
@@ -37,7 +37,7 @@ class StoreSchoolRequest extends FormRequest
             'region.required' => 'Region is required',
             'district.required' => 'District is required',
             'email.email' => 'Please enter a valid email address',
-            'phone.max' => 'Phone number cannot exceed 20 characters',
+            'phone.phone' => 'Phone number must be a valid international ground phone',
         ];
     }
 }

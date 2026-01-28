@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Onboarding;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Onboarding\StoreSchoolRequest;
 use App\Models\AcademicYear;
+use App\Models\Role;
 use App\Models\School;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use App\Models\Role;
+use Propaganistas\LaravelPhone\PhoneNumber;
 
 class SchoolSetupController extends Controller
 {
@@ -24,13 +25,15 @@ class SchoolSetupController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $request) {
+            $phone = new PhoneNumber($validated['phone']);
+
             $school = School::create([
                 'name' => $validated['name'],
                 'type' => $validated['type'],
                 'district' => $validated['district'],
                 'country' => $validated['country'],
                 'email' => $validated['email'] ?? null,
-                'phone' => $validated['phone'] ?? null,
+                'phone' => $phone->formatInternational() ?? null,
                 'code' => Str::upper(Str::random(8)),
             ]);
 
