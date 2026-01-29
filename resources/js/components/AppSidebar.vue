@@ -9,8 +9,7 @@ import {
     SidebarHeader,
     SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { BookOpen, Folder } from 'lucide-vue-next';
+
 import { usePage } from '@inertiajs/vue3'
 import { navigation } from '@/navigation'
 import SchoolSwitcher from '@/components/SchoolSwitcher.vue'
@@ -22,19 +21,6 @@ const mainNavItems = computed(() => {
   const role = page.props.auth?.user?.role
   return role && navigation[role] ? navigation[role] : []
 })
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
 </script>
 
 <template>
@@ -50,7 +36,7 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
+            <NavFooter />
             <NavUser />
         </SidebarFooter>
     </Sidebar>

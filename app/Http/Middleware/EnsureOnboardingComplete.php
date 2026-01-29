@@ -43,7 +43,8 @@ class EnsureOnboardingComplete
         // Check onboarding readiness for the active school
         $progress = app(OnboardingProgress::class)->status($school);
         if (!$progress['complete']) {
-            return redirect()->route('onboarding.school-setup.create')
+            // Redirect to the next incomplete step
+            return redirect()->route($progress['nextStep'])
                 ->with('onboarding_progress', $progress);
         }
 

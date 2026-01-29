@@ -13,7 +13,7 @@ class OnboardingProgress
 {
     /**
      * Compute onboarding readiness for a given school.
-     * Returns an array with individual checks and an overall complete flag.
+     * Returns an array with individual checks, an overall complete flag, and the next step.
      */
     public function status(School $school): array
     {
@@ -32,6 +32,9 @@ class OnboardingProgress
 
         $complete = $hasCurrentYear && $hasTerms && $hasClasses && $hasStreams && $hasSubjects;
 
+        // Determine the next step
+        $nextStep = $this->getNextStep($hasCurrentYear, $hasClasses, $hasStreams, $hasSubjects);
+
         return [
             'has_current_year' => $hasCurrentYear,
             'has_terms' => $hasTerms,
@@ -39,6 +42,31 @@ class OnboardingProgress
             'has_streams' => $hasStreams,
             'has_subjects' => $hasSubjects,
             'complete' => $complete,
+            'nextStep' => $nextStep,
         ];
+    }
+
+    /**
+     * Determine the next onboarding step based on completion status.
+     */
+    private function getNextStep(bool $hasSchool, bool $hasClasses, bool $hasStreams, bool $hasSubjects): string
+    {
+        if (!$hasSchool) {
+            return 'onboarding.school-setup.create';
+        }
+
+        if (!$hasClasses) {
+            return 'onboarding.classes.create';
+        }
+
+        if (!$hasStreams) {
+            return 'onboarding.streams.create';
+        }
+
+        if (!$hasSubjects) {
+            return 'onboarding.subjects.create';
+        }
+
+        return 'admin.dashboard';
     }
 }

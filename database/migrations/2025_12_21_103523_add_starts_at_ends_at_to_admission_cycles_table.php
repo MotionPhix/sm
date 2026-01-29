@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('admission_cycles', function (Blueprint $table) {
-            //
+            $table->dateTime('starts_at')->nullable();
+            $table->dateTime('ends_at')->nullable();
+            $table->string('target_class')->nullable();
+            $table->unsignedInteger('max_intake')->nullable();
         });
     }
 
@@ -22,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('admission_cycles', function (Blueprint $table) {
-            //
+            $table->dropColumn(['starts_at', 'ends_at', 'target_class', 'max_intake']);
         });
     }
 };

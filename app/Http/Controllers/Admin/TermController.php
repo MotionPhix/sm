@@ -22,6 +22,27 @@ class TermController extends Controller
         ]);
     }
 
+    public function create(Request $request)
+    {
+        $school = $request->user()->activeSchool;
+        $year = $school->academicYears()->where('is_current', true)->firstOrFail();
+
+        return Inertia::render('admin/settings/terms/Create', [
+            'academicYear' => $year,
+            'termCount' => $year->terms()->count(),
+        ]);
+    }
+
+    public function edit(Request $request, Term $term)
+    {
+        $school = $request->user()->activeSchool;
+        abort_unless($term->school_id === $school->id, 403);
+
+        return Inertia::render('admin/settings/terms/Edit', [
+            'term' => $term,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $school = $request->user()->activeSchool;

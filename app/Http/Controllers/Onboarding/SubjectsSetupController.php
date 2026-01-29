@@ -25,15 +25,27 @@ class SubjectsSetupController extends Controller
 
     public function store(StoreSubjectsRequest $request)
     {
-        $validated = $request->validated();
+        // Filter to only validate new subjects (those without an id)
+        $allSubjects = $request->input('subjects', []);
+        $newSubjectsOnly = array_values(array_filter($allSubjects, fn ($s) => !isset($s['id'])));
+
+        // Revalidate only new subjects with strict rules
+        $validated = validator()
+            ->make(
+                ['subjects' => $newSubjectsOnly],
+                [
+                    'subjects' => ['required', 'array', 'min:1'],
+                    'subjects.*.name' => ['required', 'string', 'max:100', 'distinct'],
+                    'subjects.*.code' => ['required', 'string', 'max:20', 'distinct'],
+                ]
+            )
+            ->validate();
+
         $school = auth()->user()->activeSchool;
-
-        // Only process new subjects (those without an id)
-        $newSubjects = array_filter($validated['subjects'], fn ($s) => !isset($s['id']));
-
         $errors = [];
 
-        foreach ($newSubjects as $index => $subjectData) {
+        // Process only new subjects
+        foreach ($validated['subjects'] as $index => $subjectData) {
             // Check for duplicates
             $duplicateError = $this->checkForDuplicates(
                 Subject::class,
@@ -43,10 +55,20 @@ class SubjectsSetupController extends Controller
             );
 
             if ($duplicateError) {
-                $errors["subjects.{$index}.name"] = $duplicateError;
-                continue;
+                // If duplicate found and user didn't provide password, show error
+                if (!$request->input('bypass_password')) {
+                    $errors["subjects.{$index}.name"] = $duplicateError;
+                    continue;
+                }
+
+                // If bypass password provided, verify it
+                if (!$this->verifyBypassPassword($request->input('bypass_password'))) {
+                    $errors["bypass_password"] = "Invalid password.";
+                    continue;
+                }
             }
 
+            // Create new subject
             Subject::create([
                 'school_id' => $school->id,
                 'name' => $subjectData['name'],

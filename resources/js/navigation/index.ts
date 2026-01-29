@@ -1,57 +1,53 @@
 import {
-    LayoutGrid,
-    Users,
-    BookOpen,
-    Wallet,
-    GraduationCap,
-    Settings,
-    Calendar,
-    ClipboardCheck,
-  } from 'lucide-vue-next'
-  import type { NavItem } from '@/types'
+  LayoutGrid,
+  Users,
+  BookOpen,
+  Wallet,
+  GraduationCap,
+  Settings,
+  Calendar,
+  ClipboardCheck,
+} from 'lucide-vue-next'
+import type { NavItem } from '@/types'
+import * as admin from '@/routes/admin'
+import * as teacher from '@/routes/teacher'
+import * as registrar from '@/routes/registrar'
+import { redirect as dashboardRedirect } from '@/routes/dashboard'
 
-  export const navigation = {
-    admin: <NavItem[]>[
-      { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid },
-      { title: 'Students', href: '/admin/students', icon: GraduationCap },
-      { title: 'Staff', href: '/admin/staff', icon: Users },
-      { title: 'Fees & Billing', href: '/admin/billing', icon: Wallet },
-      { title: 'Settings', href: '/admin/settings', icon: Settings },
-    ],
+export const navigation = {
+  admin: <NavItem[]>[
+    { title: 'Dashboard', href: admin.dashboard.url(), icon: LayoutGrid },
+    { title: 'Staff', href: admin.default.staff.index.url(), icon: Users },
+    { title: 'Settings', href: admin.default.settings.academicYear.index.url(), icon: Settings },
+  ],
 
-    head_teacher: <NavItem[]>[
-      { title: 'Dashboard', href: '/teacher/dashboard', icon: LayoutGrid },
-      { title: 'Timetable', href: '/teacher/timetable', icon: Calendar },
-      { title: 'Attendance', href: '/teacher/attendance', icon: ClipboardCheck },
-      { title: 'Classes', href: '/teacher/classes', icon: BookOpen },
-      { title: 'Students', href: '/teacher/students', icon: GraduationCap },
-    ],
+  head_teacher: <NavItem[]>[
+    { title: 'Dashboard', href: teacher.dashboard.url(), icon: LayoutGrid },
+    { title: 'Timetable', href: teacher.default.timetable.index.url(), icon: Calendar },
+    { title: 'Attendance', href: teacher.default.attendance.index.url(), icon: ClipboardCheck },
+  ],
 
-    teacher: <NavItem[]>[
-      { title: 'Dashboard', href: '/teacher/dashboard', icon: LayoutGrid },
-      { title: 'Timetable', href: '/teacher/timetable', icon: Calendar },
-      { title: 'Attendance', href: '/teacher/attendance', icon: ClipboardCheck },
-      { title: 'My Classes', href: '/teacher/classes', icon: BookOpen },
-    ],
-  
-    bursar: <NavItem[]>[
-      { title: 'Dashboard', href: '/bursar/dashboard', icon: LayoutGrid },
-      { title: 'Payments', href: '/bursar/payments', icon: Wallet },
-    ],
-  
-    registrar: <NavItem[]>[
-      { title: 'Dashboard', href: '/registrar/dashboard', icon: LayoutGrid },
-      { title: 'Admissions', href: '/registrar/admissions', icon: Users },
-    ],
-  
-    parent: <NavItem[]>[
-      { title: 'Dashboard', href: '/parent/dashboard', icon: LayoutGrid },
-      { title: 'My Children', href: '/parent/children', icon: GraduationCap },
-    ],
-  
-    student: <NavItem[]>[
-      { title: 'Dashboard', href: '/student/dashboard', icon: LayoutGrid },
-      { title: 'Results', href: '/student/results', icon: BookOpen },
-    ],
-  }
+  teacher: <NavItem[]>[
+    { title: 'Dashboard', href: teacher.dashboard.url(), icon: LayoutGrid },
+    { title: 'Timetable', href: teacher.default.timetable.index.url(), icon: Calendar },
+    { title: 'Attendance', href: teacher.default.attendance.index.url(), icon: ClipboardCheck },
+  ],
+
+  bursar: <NavItem[]>[
+    { title: 'Dashboard', href: dashboardRedirect.url(), icon: LayoutGrid },
+  ],
+
+  registrar: <NavItem[]>[
+    { title: 'Dashboard', href: registrar.dashboard.url(), icon: LayoutGrid },
+    { title: 'Admissions', href: registrar.default.admissions.index.url(), icon: Users },
+  ],
+
+  parent: <NavItem[]>[
+    { title: 'Dashboard', href: dashboardRedirect.url(), icon: LayoutGrid },
+  ],
+
+  student: <NavItem[]>[
+    { title: 'Dashboard', href: dashboardRedirect.url(), icon: LayoutGrid },
+  ],
+}
   

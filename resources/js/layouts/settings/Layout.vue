@@ -2,7 +2,9 @@
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { toUrl, urlIsActive } from '@/lib/utils';
+import { toUrl } from '@/lib/utils';
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
@@ -29,15 +31,20 @@ const sidebarNavItems: NavItem[] = [
     },
 ];
 
-const currentPath = typeof window !== undefined ? window.location.pathname : '';
+const { isNavItemActive } = useActiveRoute();
+
+const isItemActive = computed(() => (href: any) => {
+    const urlToCheck = toUrl(href);
+    const alternateUrls = sidebarNavItems
+        .filter((item) => toUrl(item.href) !== urlToCheck)
+        .map((item) => toUrl(item.href));
+    return isNavItemActive(urlToCheck, alternateUrls);
+});
 </script>
 
 <template>
     <div class="px-4 py-6">
-        <Heading
-            title="Settings"
-            description="Manage your profile and account settings"
-        />
+        <Heading title="Account Settings" description="Manage your profile and account settings" />
 
         <div class="flex flex-col lg:flex-row lg:space-x-12">
             <aside class="w-full max-w-xl lg:w-48">
@@ -47,8 +54,15 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
                         :key="toUrl(item.href)"
                         variant="ghost"
                         :class="[
-                            'w-full justify-start',
-                            { 'bg-muted': urlIsActive(item.href, currentPath) },
+                            'w-full justify-start text-left',
+                            {
+                                'bg-muted text-foreground font-medium': isItemActive(item.href),
+                            },
+                            {
+                                'text-muted-foreground hover:text-foreground': !isItemActive(
+                                    item.href,
+                                ),
+                            },
                         ]"
                         as-child
                     >

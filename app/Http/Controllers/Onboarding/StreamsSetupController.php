@@ -25,15 +25,26 @@ class StreamsSetupController extends Controller
 
     public function store(StoreStreamsRequest $request)
     {
-        $validated = $request->validated();
+        // Filter to only validate new streams (those without an id)
+        $allStreams = $request->input('streams', []);
+        $newStreamsOnly = array_values(array_filter($allStreams, fn ($s) => !isset($s['id'])));
+
+        // Revalidate only new streams with strict rules
+        $validated = validator()
+            ->make(
+                ['streams' => $newStreamsOnly],
+                [
+                    'streams' => ['required', 'array', 'min:1'],
+                    'streams.*.name' => ['required', 'string', 'max:100', 'distinct'],
+                ]
+            )
+            ->validate();
+
         $school = auth()->user()->activeSchool;
-
-        // Only process new streams (those without an id)
-        $newStreams = array_filter($validated['streams'], fn ($s) => !isset($s['id']));
-
         $errors = [];
 
-        foreach ($newStreams as $index => $streamData) {
+        // Process only new streams
+        foreach ($validated['streams'] as $index => $streamData) {
             // Check for duplicates
             $duplicateError = $this->checkForDuplicates(
                 Stream::class,
@@ -43,10 +54,20 @@ class StreamsSetupController extends Controller
             );
 
             if ($duplicateError) {
-                $errors["streams.{$index}.name"] = $duplicateError;
-                continue;
+                // If duplicate found and user didn't provide password, show error
+                if (!$request->input('bypass_password')) {
+                    $errors["streams.{$index}.name"] = $duplicateError;
+                    continue;
+                }
+
+                // If bypass password provided, verify it
+                if (!$this->verifyBypassPassword($request->input('bypass_password'))) {
+                    $errors["bypass_password"] = "Invalid password.";
+                    continue;
+                }
             }
 
+            // Create new stream
             Stream::create([
                 'school_id' => $school->id,
                 'name' => $streamData['name'],

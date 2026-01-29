@@ -17,6 +17,7 @@ class StoreSubjectsRequest extends FormRequest
             'subjects' => ['required', 'array', 'min:1'],
             'subjects.*.name' => ['required', 'string', 'max:100', 'distinct'],
             'subjects.*.code' => ['required', 'string', 'max:20', 'distinct'],
+            'bypass_password' => ['nullable', 'string'],
         ];
     }
 

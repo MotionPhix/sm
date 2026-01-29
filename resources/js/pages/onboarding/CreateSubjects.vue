@@ -94,18 +94,34 @@ const goBack = () => {
     >
         <Head title="Add Subjects" />
 
+        <!-- Warning banner -->
+        <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+            <div class="flex gap-3">
+                <div class="mt-0.5 shrink-0">
+                    <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                        Add all subjects now
+                    </p>
+                    <p class="mt-1 text-sm text-amber-700 dark:text-amber-300">
+                        Please add all the subjects you need in one go. Once you complete setup, you can manage additional subjects in the school settings.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <form @submit.prevent="onSubmit" class="space-y-6">
             <FieldGroup>
                 <div class="space-y-4">
                     <div
                         v-for="(subject, index) in subjects"
                         :key="index"
-                        class="grid grid-cols-3 gap-2 items-end"
-                    >
+                        class="flex gap-4 items-end w-full">
                         <Field
-                            :data-invalid="subjectErrors[index]?.name"
-                            class="col-span-2"
-                        >
+                            :data-invalid="subjectErrors[index]?.name">
                             <FieldLabel :for="`subject-name-${index}`">
                                 Subject name
                             </FieldLabel>
@@ -120,8 +136,8 @@ const goBack = () => {
                         </Field>
 
                         <Field
-                            :data-invalid="subjectErrors[index]?.code"
-                        >
+                            class="max-w-[5rem]"
+                            :data-invalid="subjectErrors[index]?.code">
                             <FieldLabel :for="`subject-code-${index}`">
                                 Code
                             </FieldLabel>
@@ -129,7 +145,7 @@ const goBack = () => {
                                 :id="`subject-code-${index}`"
                                 v-model="subject.code"
                                 name="code"
-                                placeholder="e.g., MTH"
+                                placeholder="e.g., MATH, SCI, ENG"
                                 required
                             />
                             <InputError :message="subjectErrors[index]?.code" />
@@ -139,23 +155,19 @@ const goBack = () => {
                             v-if="subjects.length > 1"
                             type="button"
                             variant="ghost"
-                            size="icon"
-                            @click="removeSubjectField(index)"
-                            class="h-10 w-10 col-span-1"
-                        >
-                            <Trash2 class="w-4 h-4" />
+                            size="icon-sm"
+                            @click="removeSubjectField(index)">
+                            <Trash2 />
                         </Button>
-                        <div v-else class="w-10" />
                     </div>
                 </div>
 
                 <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     @click="addSubjectField"
-                    class="mt-2"
-                >
+                    class="mt-2">
                     <Plus class="w-4 h-4 mr-2" />
                     Add subject
                 </Button>
@@ -163,19 +175,19 @@ const goBack = () => {
 
             <Separator class="my-6" />
 
-            <div class="flex gap-2">
+            <div class="flex justify-between">
                 <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     @click="goBack"
+                    size="sm"
                     :disabled="hasExistingSubjects"
-                    :title="hasExistingSubjects ? 'Cannot go back after subjects have been created. Edit in settings later.' : ''"
-                    class="flex-1"
-                >
+                    :title="hasExistingSubjects ? 'Cannot go back after subjects have been created. Edit in settings later.' : ''">
                     <ChevronLeft class="w-4 h-4 mr-2" />
                     Back
                 </Button>
-                <Button type="submit" class="flex-1 h-10">
+
+                <Button type="submit" class="h-10">
                     Complete setup
                     <ArrowRight class="w-4 h-4 ml-2" />
                 </Button>

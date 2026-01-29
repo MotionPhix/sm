@@ -6,6 +6,15 @@
                 "G:\\Herd\\school\\artisan",
                 "boost:mcp"
             ]
+        },
+        "herd": {
+            "command": "C:\\Users\\Amelia\\.config\\herd\\bin\\php83\\php.exe",
+            "args": [
+                "C:/Users/Amelia/.config/herd/bin/herd-mcp.phar"
+            ],
+            "env": {
+                "SITE_PATH": "G:\\Herd\\school"
+            }
         }
     }
 }

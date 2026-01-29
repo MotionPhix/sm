@@ -16,6 +16,7 @@ class StoreStreamsRequest extends FormRequest
         return [
             'streams' => ['required', 'array', 'min:1'],
             'streams.*.name' => ['required', 'string', 'max:100', 'distinct'],
+            'bypass_password' => ['nullable', 'string'],
         ];
     }
 

@@ -128,7 +128,10 @@ Route::middleware(['auth', 'school.context'])->group(function () {
     require __DIR__.'/settings.php';
     require __DIR__.'/teacher.php';
     require __DIR__.'/registrar.php';
-    // Other role-based routes...
+    require __DIR__.'/bursar.php';
+    require __DIR__.'/accountant.php';
+    require __DIR__.'/student.php';
+    require __DIR__.'/parent.php';
 });
 
 // Admin routes (has its own complete middleware stack)

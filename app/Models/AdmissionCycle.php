@@ -13,7 +13,15 @@ class AdmissionCycle extends Model
         'starts_at',
         'ends_at',
         'name',
+        'target_class',
+        'max_intake',
         'is_active',
+    ];
+
+    protected $casts = [
+        'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     protected static function booted(): void

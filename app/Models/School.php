@@ -47,6 +47,11 @@ class School extends Model
         return $this->hasOne(AcademicYear::class)->where('is_current', true);
     }
 
+    public function admissionCycles()
+    {
+        return $this->hasMany(AdmissionCycle::class);
+    }
+
     public function admins()
     {
         return $this->users()

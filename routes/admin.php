@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdmissionCycleController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TermController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -11,9 +12,7 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-            return Inertia::render('admin/Dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
         Route::get(
             '/staff',
@@ -50,15 +49,45 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
                     [AdmissionCycleController::class, 'index']
                 )->name('admission-cycles.index');
 
+                Route::get(
+                    '/admission-cycles/create',
+                    [AdmissionCycleController::class, 'create']
+                )->name('admission-cycles.create');
+
+                Route::get(
+                    '/admission-cycles/{admissionCycle}/edit',
+                    [AdmissionCycleController::class, 'edit']
+                )->name('admission-cycles.edit');
+
                 Route::post(
                     '/admission-cycles',
                     [AdmissionCycleController::class, 'store']
                 )->name('admission-cycles.store');
 
+                Route::put(
+                    '/admission-cycles/{admissionCycle}',
+                    [AdmissionCycleController::class, 'update']
+                )->name('admission-cycles.update');
+
+                Route::delete(
+                    '/admission-cycles/{admissionCycle}',
+                    [AdmissionCycleController::class, 'destroy']
+                )->name('admission-cycles.destroy');
+
                 Route::get(
                     '/terms',
                     [TermController::class, 'index']
                 )->name('terms.index');
+
+                Route::get(
+                    '/terms/create',
+                    [TermController::class, 'create']
+                )->name('terms.create');
+
+                Route::get(
+                    '/terms/{term}/edit',
+                    [TermController::class, 'edit']
+                )->name('terms.edit');
 
                 Route::post(
                     '/terms',
