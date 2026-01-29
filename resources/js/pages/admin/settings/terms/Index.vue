@@ -22,10 +22,9 @@ import { ModalLink } from '@inertiaui/modal-vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { useConfirm } from '@/composables/useConfirm'
 import { useRoleRoutes } from '@/composables/useRoleRoutes'
+import { useAdminSettingsNavigation } from '@/composables/useAdminSettingsNavigation'
 // Wayfinder routes - imported directly for type safety
 import { create as termsCreate, edit as termsEdit, destroy as termsDestroy, generateDefaults as termsGenerateDefaults } from '@/routes/admin/settings/terms'
-import { index as academicYearsIndex } from '@/routes/admin/settings/academic-year'
-import { index as admissionCyclesIndex } from '@/routes/admin/settings/admission-cycles'
 import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
 
 interface Term {
@@ -52,21 +51,7 @@ const props = defineProps<{
 const page = usePage()
 
 const { adminSettingsBreadcrumbs } = useBreadcrumbs()
-
-const navItems = [
-    {
-        title: 'Academic Years',
-        href: academicYearsIndex().url,
-    },
-    {
-        title: 'Terms',
-        href: '#',
-    },
-    {
-        title: 'Admission Cycles',
-        href: admissionCyclesIndex().url,
-    },
-]
+const { adminSettingsNavItems } = useAdminSettingsNavigation()
 
 const breadcrumbs = adminSettingsBreadcrumbs('Terms')
 
@@ -110,22 +95,27 @@ const formatDate = (dateStr: string) => {
 
         <Head title="Terms" />
 
+        <template #act>
+            <Button v-if="terms.length === 0" variant="outline" @click="generateDefaults">
+                <Sparkles class="mr-2 h-4 w-4" />
+                Generate 3-Term Default
+            </Button>
+
+            <Button :as="ModalLink" :href="termsCreate().url">
+                <Plus class="mr-2 h-4 w-4" />
+                Add Term
+            </Button>
+        </template>
+
         <AdminSettingsLayout title="School Settings"
-            description="Configure your school's academic calendar and other settings" :items="navItems">
+            description="Configure your school's academic calendar and other settings" :items="adminSettingsNavItems">
             <div class="space-y-6">
                 <div class="flex items-center justify-between">
-                    <HeadingSmall :title="`Terms — ${academicYear?.name}`"
-                        description="Define term dates for the current academic year. Malawian schools typically use a 3-term structure." />
-                    <div class="flex gap-2">
-                        <Button v-if="terms.length === 0" variant="outline" @click="generateDefaults">
-                            <Sparkles class="mr-2 h-4 w-4" />
-                            Generate 3-Term Default
-                        </Button>
-                        <Button :as="ModalLink" :href="termsCreate().url">
-                            <Plus class="mr-2 h-4 w-4" />
-                            Add Term
-                        </Button>
-                    </div>
+                    <HeadingSmall 
+                        :title="`Terms — ${academicYear?.name}`"
+                        description="Define term dates for the current academic year. Malawian schools typically use a 3-term structure." 
+                    />
+                    
                 </div>
 
                 <!-- Success Alert -->

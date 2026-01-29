@@ -12,9 +12,8 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { store } from '@/routes/admin/settings/academic-year'
-import { index as termsIndex } from '@/routes/admin/settings/terms'
-import { index as admissionCyclesIndex } from '@/routes/admin/settings/admission-cycles'
 import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
+import { useAdminSettingsNavigation } from '@/composables/useAdminSettingsNavigation'
 import { Calendar } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { Spinner } from '@/components/ui/spinner'
@@ -30,22 +29,8 @@ defineProps<{
 }>()
 
 const { adminSettingsBreadcrumbs } = useBreadcrumbs()
+const { adminSettingsNavItems } = useAdminSettingsNavigation()
 const formRef = ref()
-
-const navItems = [
-    {
-        title: 'Academic Years',
-        href: '#',
-    },
-    {
-        title: 'Terms',
-        href: termsIndex().url,
-    },
-    {
-        title: 'Admission Cycles',
-        href: admissionCyclesIndex().url,
-    },
-]
 
 const breadcrumbs = adminSettingsBreadcrumbs('Academic Years')
 </script>
@@ -65,7 +50,7 @@ const breadcrumbs = adminSettingsBreadcrumbs('Academic Years')
         </template>
 
         <AdminSettingsLayout title="School Settings"
-            description="Configure your school's academic calendar and other settings" :items="navItems">
+            description="Configure your school's academic calendar and other settings" :items="adminSettingsNavItems">
             <div class="space-y-6">
                 <HeadingSmall title="Academic Years"
                     description="Manage school academic calendar. Only one academic year can be active." />

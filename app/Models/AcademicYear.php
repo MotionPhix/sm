@@ -50,6 +50,11 @@ class AcademicYear extends Model
         return $this->hasMany(Term::class)->orderBy('sequence');
     }
 
+    public function feeStructures(): HasMany
+    {
+        return $this->hasMany(FeeStructure::class);
+    }
+
     public function isPast(): bool
     {
         return ! $this->is_current;

@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button'
 import AppLayout from '@/layouts/AppLayout.vue'
 import AdminSettingsLayout from '@/layouts/AdminSettingsLayout.vue'
 import HeadingSmall from '@/components/HeadingSmall.vue'
-import InputError from '@/components/InputError.vue'
-import type { BreadcrumbItemType } from '@/types'
 import { Plus, Trash2, Edit2, GraduationCap, Calendar, Check, Clock } from 'lucide-vue-next'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -14,10 +12,9 @@ import { ModalLink } from '@inertiaui/modal-vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { useConfirm } from '@/composables/useConfirm'
 import { useRoleRoutes } from '@/composables/useRoleRoutes'
+import { useAdminSettingsNavigation } from '@/composables/useAdminSettingsNavigation'
 // Wayfinder routes - imported directly for type safety
 import { create as admissionCyclesCreate, edit as admissionCyclesEdit, destroy as admissionCyclesDestroy } from '@/routes/admin/settings/admission-cycles'
-import { index as academicYearsIndex } from '@/routes/admin/settings/academic-year'
-import { index as termsIndex } from '@/routes/admin/settings/terms'
 import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
 
 interface AdmissionCycle {
@@ -38,21 +35,7 @@ const page = usePage()
 const flash = computed(() => page.props.flash as { success?: string; error?: string })
 
 const { adminSettingsBreadcrumbs } = useBreadcrumbs()
-
-const navItems = [
-    {
-        title: 'Academic Years',
-        href: academicYearsIndex().url,
-    },
-    {
-        title: 'Terms',
-        href: termsIndex().url,
-    },
-    {
-        title: 'Admission Cycles',
-        href: '#',
-    },
-]
+const { adminSettingsNavItems } = useAdminSettingsNavigation()
 
 const breadcrumbs = adminSettingsBreadcrumbs('Admission Cycles')
 
@@ -95,17 +78,24 @@ const isActive = (cycle: AdmissionCycle) => {
 
         <Head title="Admission Cycles" />
 
-        <AdminSettingsLayout title="School Settings"
-            description="Configure your school's academic calendar and other settings" :items="navItems">
+        <template #act>
+            <Button 
+                :as="ModalLink" 
+                :href="admissionCyclesCreate().url">
+                <Plus />
+                New Cycle
+            </Button>
+        </template>
+
+        <AdminSettingsLayout 
+            title="School Settings"
+            description="Configure your school's academic calendar and other settings" 
+            :items="adminSettingsNavItems">
             <div class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <HeadingSmall title="Admission Cycles"
-                        description="Manage admission windows for different classes and intake periods" />
-                    <Button :as="ModalLink" :href="admissionCyclesCreate().url">
-                        <Plus class="mr-2 h-4 w-4" />
-                        New Cycle
-                    </Button>
-                </div>
+                <HeadingSmall 
+                    title="Admission Cycles"
+                    description="Manage admission windows for different classes and intake periods" 
+                />
 
                 <!-- Success Alert -->
                 <Alert v-if="flash?.success"

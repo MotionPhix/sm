@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdmissionCycleController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FeeItemController;
+use App\Http\Controllers\Admin\FeeStructureController;
 use App\Http\Controllers\Admin\TermController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -108,6 +110,68 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
                     '/terms/generate-defaults',
                     [TermController::class, 'generateDefaults']
                 )->name('terms.generate-defaults');
+
+                // Fee Items
+                Route::get(
+                    '/fee-items',
+                    [FeeItemController::class, 'index']
+                )->name('fee-items.index');
+
+                Route::get(
+                    '/fee-items/create',
+                    [FeeItemController::class, 'create']
+                )->name('fee-items.create');
+
+                Route::post(
+                    '/fee-items',
+                    [FeeItemController::class, 'store']
+                )->name('fee-items.store');
+
+                Route::get(
+                    '/fee-items/{feeItem}/edit',
+                    [FeeItemController::class, 'edit']
+                )->name('fee-items.edit');
+
+                Route::put(
+                    '/fee-items/{feeItem}',
+                    [FeeItemController::class, 'update']
+                )->name('fee-items.update');
+
+                Route::delete(
+                    '/fee-items/{feeItem}',
+                    [FeeItemController::class, 'destroy']
+                )->name('fee-items.destroy');
+
+                // Fee Structures
+                Route::get(
+                    '/fee-structures',
+                    [FeeStructureController::class, 'index']
+                )->name('fee-structures.index');
+
+                Route::get(
+                    '/fee-structures/create',
+                    [FeeStructureController::class, 'create']
+                )->name('fee-structures.create');
+
+                Route::post(
+                    '/fee-structures',
+                    [FeeStructureController::class, 'store']
+                )->name('fee-structures.store');
+
+                Route::get(
+                    '/fee-structures/{feeStructure}/edit',
+                    [FeeStructureController::class, 'edit']
+                )->name('fee-structures.edit');
+
+                Route::put(
+                    '/fee-structures/{feeStructure}',
+                    [FeeStructureController::class, 'update']
+                )->name('fee-structures.update');
+
+                Route::delete(
+                    '/fee-structures/{feeStructure}',
+                    [FeeStructureController::class, 'destroy']
+                )->name('fee-structures.destroy');
             });
 
 

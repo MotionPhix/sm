@@ -60,4 +60,19 @@ class School extends Model
             });
     }
 
+    public function classes()
+    {
+        return $this->hasMany(SchoolClass::class);
+    }
+
+    public function feeItems()
+    {
+        return $this->hasMany(FeeItem::class);
+    }
+
+    public function feeStructures()
+    {
+        return $this->hasMany(FeeStructure::class);
+    }
+
 }
