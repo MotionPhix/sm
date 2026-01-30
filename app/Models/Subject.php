@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Concerns\TenantScoped as TenantScope;
 
 class Subject extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'school_id',
         'name',

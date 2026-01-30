@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\AcademicYear;
@@ -10,21 +12,19 @@ use App\Models\Stream;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<ClassStreamAssignment>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClassStreamAssignment>
  */
-class ClassStreamAssignmentFactory extends Factory
+final class ClassStreamAssignmentFactory extends Factory
 {
-    protected $model = ClassStreamAssignment::class;
-
     public function definition(): array
     {
-        $school = School::factory()->create();
-
         return [
-            'school_id' => $school->id,
-            'academic_year_id' => AcademicYear::factory()->forSchool($school),
-            'school_class_id' => SchoolClass::factory()->forSchool($school),
-            'stream_id' => Stream::factory()->forSchool($school),
+            'school_id' => School::factory(),
+            'academic_year_id' => AcademicYear::factory(),
+            'school_class_id' => SchoolClass::factory(),
+            'stream_id' => Stream::factory(),
+            'capacity' => $this->faker->numberBetween(30, 50),
+            'is_active' => true,
         ];
     }
 
@@ -35,19 +35,17 @@ class ClassStreamAssignmentFactory extends Factory
         ]);
     }
 
-    public function forAcademicYear(AcademicYear $year): static
+    public function forAcademicYear(AcademicYear $academicYear): static
     {
         return $this->state(fn (array $attributes) => [
-            'school_id' => $year->school_id,
-            'academic_year_id' => $year->id,
+            'academic_year_id' => $academicYear->id,
         ]);
     }
 
-    public function forClass(SchoolClass $class): static
+    public function forClass(SchoolClass $schoolClass): static
     {
         return $this->state(fn (array $attributes) => [
-            'school_id' => $class->school_id,
-            'school_class_id' => $class->id,
+            'school_class_id' => $schoolClass->id,
         ]);
     }
 
@@ -58,10 +56,24 @@ class ClassStreamAssignmentFactory extends Factory
         ]);
     }
 
-    public function withoutStream(): static
+    public function withCapacity(int $capacity): static
     {
         return $this->state(fn (array $attributes) => [
-            'stream_id' => null,
+            'capacity' => $capacity,
+        ]);
+    }
+
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => true,
+        ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
         ]);
     }
 }

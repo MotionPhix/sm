@@ -143,22 +143,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        // Explicit per-user override
-        $override = \DB::table('permission_school_user')
-            ->where('school_id', $this->active_school_id)
-            ->where('user_id', $this->id)
-            ->where('permission_id', Permission::where('name', $permission)->value('id'))
-            ->first();
-
-        if ($override) {
-            return (bool) $override->allowed;
-        }
-
-        /*return $this
-            ->permissionsForActiveSchool()
-            ->contains('name', $permission);*/
-
-        // Fallback to role permissions
+        // Check role permissions for active school
         return $this->roleForActiveSchool()
             ?->permissions()
             ->where('name', $permission)

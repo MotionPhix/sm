@@ -10,7 +10,7 @@ class StoreFeeItemRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('fees.create');
+        return $this->user()->hasPermission('fees.create');
     }
 
     public function rules(): array

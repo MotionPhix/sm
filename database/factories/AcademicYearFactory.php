@@ -19,7 +19,7 @@ class AcademicYearFactory extends Factory
 
         return [
             'school_id' => School::factory(),
-            'name' => "{$year}/{$year + 1}",
+            'name' => $year . '/' . ($year + 1),
             'starts_at' => "{$year}-01-01",
             'ends_at' => "{$year}-12-31",
             'is_current' => false,

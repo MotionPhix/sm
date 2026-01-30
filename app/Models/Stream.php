@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Concerns\TenantScoped as TenantScope;
 
 class Stream extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['school_id', 'name'];
 
     protected static function booted(): void

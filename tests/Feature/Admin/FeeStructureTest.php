@@ -7,6 +7,8 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\School;
 use App\Models\SchoolClass;
+use App\Models\Stream;
+use App\Models\Subject;
 use App\Models\Term;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,10 +17,12 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->school = School::factory()->create();
-    $adminRole = Role::firstOrCreate(['name' => 'admin'], ['label' => 'Administrator']);
+    
+    // Create an admin role with specific name to match route middleware
+    $adminRole = Role::factory()->create(['name' => 'admin', 'label' => 'Administrator']);
     $this->admin = User::factory()->create(['active_school_id' => $this->school->id]);
     $this->admin->schools()->attach($this->school->id, ['role_id' => $adminRole->id]);
-    
+
     // Create and assign fee-related permissions
     $permissions = [
         Permission::firstOrCreate(['name' => 'fees.view'], ['label' => 'View Fees']),
@@ -28,12 +32,23 @@ beforeEach(function () {
         Permission::firstOrCreate(['name' => 'dashboard.view'], ['label' => 'View Dashboard']),
         Permission::firstOrCreate(['name' => 'settings.view'], ['label' => 'View Settings']),
     ];
-    
+
     $adminRole->permissions()->syncWithoutDetaching(collect($permissions)->pluck('id'));
-    
+
+    // Create onboarding data to satisfy EnsureOnboardingComplete middleware
     $this->academicYear = AcademicYear::factory()->forSchool($this->school)->current()->create();
+
+    // Create 3 terms for the academic year
+    Term::factory()->forAcademicYear($this->academicYear)->create(['sequence' => 1, 'name' => 'Term 1']);
+    Term::factory()->forAcademicYear($this->academicYear)->create(['sequence' => 2, 'name' => 'Term 2']);
+    Term::factory()->forAcademicYear($this->academicYear)->create(['sequence' => 3, 'name' => 'Term 3']);
+
     $this->class = SchoolClass::factory()->forSchool($this->school)->create();
-    $this->term = Term::factory()->forAcademicYear($this->academicYear)->create();
+    Stream::factory()->forSchool($this->school)->create(['name' => 'A']);
+    Subject::factory()->forSchool($this->school)->create(['name' => 'Mathematics', 'code' => 'MATH']);
+
+    // Use an existing term instead of creating a new one
+    $this->term = Term::where('academic_year_id', $this->academicYear->id)->first();
     $this->feeItem = FeeItem::factory()->forSchool($this->school)->tuition()->create();
 
     app()->instance('currentSchool', $this->school);
@@ -285,8 +300,9 @@ describe('Fee Structures - Model Methods', function () {
 
 describe('Fee Structures - Tenant Isolation', function () {
     it('applies global scope to filter by school', function () {
+        $otherSchool = School::factory()->create();
         FeeStructure::factory(2)->create(['school_id' => $this->school->id]);
-        FeeStructure::factory(3)->create(['school_id' => School::factory()]);
+        FeeStructure::factory(3)->create(['school_id' => $otherSchool->id]);
 
         $structures = FeeStructure::all();
 

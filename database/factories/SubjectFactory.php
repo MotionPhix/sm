@@ -3,18 +3,19 @@
 namespace Database\Factories;
 
 use App\Models\School;
-use App\Models\Stream;
+use App\Models\Subject;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class StreamFactory extends Factory
+class SubjectFactory extends Factory
 {
-    protected $model = Stream::class;
+    protected $model = Subject::class;
 
     public function definition(): array
     {
         return [
             'school_id' => School::factory(),
-            'name' => $this->faker->randomElement(['A', 'B', 'C', 'D', 'East', 'West', 'North', 'South']),
+            'name' => $this->faker->word() . ' Subject',
+            'code' => strtoupper($this->faker->unique()->bothify('???')),
         ];
     }
 

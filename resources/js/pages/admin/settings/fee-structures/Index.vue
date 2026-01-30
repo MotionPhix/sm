@@ -237,34 +237,6 @@ const getTotalAmount = (structure: FeeStructure): string => {
                                 </Empty>
                             </TableEmpty>
                         </Table>
-                        
-                        <!-- <TableEmpty v-if="feeStructures.data.length === 0">
-                            <div class="mx-auto w-full bg-rose-500 col-span-7">
-                                <Empty>
-
-                                    <EmptyHeader>
-                                        <EmptyMedia>
-                                            <Construction :size="64" />
-                                        </EmptyMedia>
-
-                                        <EmptyTitle>
-                                            No fee structures assigned
-                                        </EmptyTitle>   
-                                        <EmptyDescription>
-                                            Create fee items first, then assign them to classes and terms.
-                                        </EmptyDescription>
-                                    </EmptyHeader>
-
-                                    <Button 
-                                        :as="ModalLink" 
-                                        :href="feeStructuresCreate().url">
-                                        <Plus class="mr-2 h-4 w-4" />
-                                        Assign Fees to Class
-                                    </Button>
-
-                                </Empty>
-                            </div>
-                        </TableEmpty> -->
                     </div>
                 </div>
 

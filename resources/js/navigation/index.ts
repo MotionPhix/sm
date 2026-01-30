@@ -40,6 +40,7 @@ export const navigation = {
   registrar: <NavItem[]>[
     { title: 'Dashboard', href: registrar.dashboard.url(), icon: LayoutGrid },
     { title: 'Admissions', href: registrar.default.admissions.index.url(), icon: Users },
+    { title: 'Students', href: registrar.default.students.index.url(), icon: GraduationCap },
   ],
 
   parent: <NavItem[]>[
@@ -50,4 +51,3 @@ export const navigation = {
     { title: 'Dashboard', href: dashboardRedirect.url(), icon: LayoutGrid },
   ],
 }
-  

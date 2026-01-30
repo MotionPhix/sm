@@ -63,7 +63,7 @@ const pendingInvitations = page.props.pendingInvitations as Invitation[];
             </Button>
         </template>
 
-        <div class="flex flex-col space-y-6">
+        <div class="flex flex-col space-y-6 max-w-6xl">
             <Heading
                 title="Staff members"
                 description="Manage staff members for the active school"

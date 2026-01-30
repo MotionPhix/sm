@@ -10,7 +10,7 @@ class UpdateFeeItemRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('fees.update');
+        return $this->user()->hasPermission('fees.edit');
     }
 
     public function rules(): array
