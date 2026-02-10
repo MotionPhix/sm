@@ -20,6 +20,7 @@ class StudentEnrollmentFactory extends Factory
             'student_id' => Student::factory(),
             'class_stream_assignment_id' => ClassStreamAssignment::factory(),
             'is_active' => true,
+            'enrollment_date' => $this->faker->date(),
         ];
     }
 

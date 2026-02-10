@@ -61,7 +61,7 @@ beforeEach(function () {
 it('can transfer student between classes', function () {
     $response = $this->actingAs($this->registrar)
         ->post("/registrar/students/{$this->student->id}/transfer", [
-            'target_class_stream_assignment_id' => $this->classStreamAssignmentB->id,
+            'class_stream_assignment_id' => $this->classStreamAssignmentB->id,
             'transfer_date' => '2024-02-01',
             'reason' => 'Class size reduction',
         ]);
@@ -79,6 +79,11 @@ it('can transfer student between classes', function () {
         'student_id' => $this->student->id,
         'class_stream_assignment_id' => $this->classStreamAssignmentB->id,
         'is_active' => true,
+    ]);
+
+    $this->assertDatabaseHas('student_enrollments', [
+        'student_id' => $this->student->id,
+        'class_stream_assignment_id' => $this->classStreamAssignmentA->id,
         'transfer_reason' => 'Class size reduction',
     ]);
 
@@ -90,7 +95,7 @@ it('can transfer student between classes', function () {
 it('requires reason for transfer', function () {
     $response = $this->actingAs($this->registrar)
         ->post("/registrar/students/{$this->student->id}/transfer", [
-            'target_class_stream_assignment_id' => $this->classStreamAssignmentB->id,
+            'class_stream_assignment_id' => $this->classStreamAssignmentB->id,
             'transfer_date' => '2024-02-01',
         ]);
 
@@ -100,29 +105,29 @@ it('requires reason for transfer', function () {
 it('cannot transfer to same class', function () {
     $response = $this->actingAs($this->registrar)
         ->post("/registrar/students/{$this->student->id}/transfer", [
-            'target_class_stream_assignment_id' => $this->classStreamAssignmentA->id,
+            'class_stream_assignment_id' => $this->classStreamAssignmentA->id,
             'transfer_date' => '2024-02-01',
             'reason' => 'Test transfer',
         ]);
 
-    $response->assertSessionHasErrors(['target_class_stream_assignment_id']);
+    $response->assertSessionHasErrors(['class_stream_assignment_id']);
 });
 
 it('validates target class exists', function () {
     $response = $this->actingAs($this->registrar)
         ->post("/registrar/students/{$this->student->id}/transfer", [
-            'target_class_stream_assignment_id' => 'non-existent-id',
+            'class_stream_assignment_id' => 'non-existent-id',
             'transfer_date' => '2024-02-01',
             'reason' => 'Test transfer',
         ]);
 
-    $response->assertSessionHasErrors(['target_class_stream_assignment_id']);
+    $response->assertSessionHasErrors(['class_stream_assignment_id']);
 });
 
 it('creates transfer history record', function () {
     $response = $this->actingAs($this->registrar)
         ->post("/registrar/students/{$this->student->id}/transfer", [
-            'target_class_stream_assignment_id' => $this->classStreamAssignmentB->id,
+            'class_stream_assignment_id' => $this->classStreamAssignmentB->id,
             'transfer_date' => '2024-02-01',
             'reason' => 'Academic reasons',
         ]);
@@ -131,8 +136,7 @@ it('creates transfer history record', function () {
 
     $this->assertDatabaseHas('student_enrollments', [
         'student_id' => $this->student->id,
-        'class_stream_assignment_id' => $this->classStreamAssignmentB->id,
-        'is_active' => true,
+        'class_stream_assignment_id' => $this->classStreamAssignmentA->id,
         'transfer_reason' => 'Academic reasons',
     ]);
 });
@@ -149,7 +153,7 @@ it('can transfer student between different classes', function () {
 
     $response = $this->actingAs($this->registrar)
         ->post("/registrar/students/{$this->student->id}/transfer", [
-            'target_class_stream_assignment_id' => $classStreamAssignmentC->id,
+            'class_stream_assignment_id' => $classStreamAssignmentC->id,
             'transfer_date' => '2024-02-01',
             'reason' => 'Promoted to next class',
         ]);

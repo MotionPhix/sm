@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3'
-import { Modal } from '@inertiaui/modal-vue'
 import InputError from '@/components/InputError.vue'
 import {
     ModalFooter,
@@ -9,9 +7,8 @@ import {
     ModalScrollable,
 } from '@/components/modal'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
-import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
     Select,
@@ -20,10 +17,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { store } from '@/routes/admin/settings/fee-structures'
-import { ref, computed } from 'vue'
 import { Spinner } from '@/components/ui/spinner'
-import { Plus, Trash2, Info } from 'lucide-vue-next'
+import { Textarea } from '@/components/ui/textarea'
+import { store } from '@/routes/admin/settings/fee-structures'
+import { Form, Head } from '@inertiajs/vue3'
+import { Modal } from '@inertiaui/modal-vue'
+import { Info, Plus, Trash2 } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
 
 interface AcademicYear {
     id: number
@@ -70,11 +70,11 @@ const form = ref({
 
 // Determine primary vs secondary classes based on typical Malawi structure
 // Primary: usually Form 1-4, Secondary: Form 5-6 or similar
-const primaryClasses = computed(() => 
+const primaryClasses = computed(() =>
     props.classes.filter((c) => c.order <= 4)
 )
 
-const secondaryClasses = computed(() => 
+const secondaryClasses = computed(() =>
     props.classes.filter((c) => c.order > 4)
 )
 
@@ -159,7 +159,7 @@ const areSelectedClassesValid = computed(() => {
     <Modal
         ref="createModal"
         v-slot="{ close }"
-        max-width="3xl"
+        max-width="xl"
         :close-explicitly="true"
         :close-button="false">
         <Head title="Assign Fees to Classes" />
@@ -170,9 +170,9 @@ const areSelectedClassesValid = computed(() => {
 
             <ModalScrollable>
                 <Form ref="createForm" v-bind="{ url: store().url, method: 'post', data: form }"
-                    v-slot="{ errors, processing }" @success="handleSuccess"
+                    v-slot="{ errors }" @success="handleSuccess"
                     :options="{ preserveScroll: true }">
-                    
+
                     <!-- Grouping Strategy Selection -->
                     <FieldGroup class="space-y-4 border-b pb-6">
                         <div>
@@ -181,9 +181,9 @@ const areSelectedClassesValid = computed(() => {
                         </div>
 
                         <!-- Per Class Option -->
-                        <div class="flex items-start gap-3 p-4 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
+                        <RadioGroup class="flex items-start gap-3 p-4 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
                             @click="updateGroupingStrategy('individual')">
-                            <RadioGroupItem 
+                            <RadioGroupItem
                                 :id="'strategy-individual'"
                                 :value="'individual'"
                                 :checked="groupingStrategy === 'individual'"
@@ -196,25 +196,29 @@ const areSelectedClassesValid = computed(() => {
                                     Set different fees for each class. Useful when classes have significantly different fee structures.
                                 </p>
                             </div>
-                        </div>
+                        </RadioGroup>
 
                         <!-- Primary & Secondary Option -->
-                        <div class="flex items-start gap-3 p-4 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
+                        <RadioGroup
+                            class="flex items-start gap-3 p-4 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
                             @click="updateGroupingStrategy('primary-secondary')">
-                            <RadioGroupItem 
+                            <RadioGroupItem
                                 :id="'strategy-groups'"
                                 :value="'primary-secondary'"
                                 :checked="groupingStrategy === 'primary-secondary'"
-                                class="mt-1" />
+                                class="mt-1"
+                            />
+
                             <div class="flex-1">
                                 <label :for="'strategy-groups'" class="font-medium text-sm cursor-pointer">
                                     Primary & Secondary Grouping
                                 </label>
+
                                 <p class="text-xs text-muted-foreground mt-1">
-                                    Group fees by Primary (Form 1-4) and Secondary (Form 5+) classes. Saves time when most classes in a level share the same fees.
+                                    Group fees by Primary (Standard 1-8) and Secondary (Form 1-4) classes. Saves time when most classes in a level share the same fees.
                                 </p>
                             </div>
-                        </div>
+                        </RadioGroup>
                     </FieldGroup>
 
                     <!-- Class Selection -->
@@ -226,10 +230,10 @@ const areSelectedClassesValid = computed(() => {
                         <!-- Individual Class Selection -->
                         <div v-if="groupingStrategy === 'individual'" class="space-y-2">
                             <div class="grid grid-cols-2 gap-3">
-                                <label v-for="klass in classes" :key="klass.id" 
+                                <label v-for="klass in classes" :key="klass.id"
                                     class="flex items-center gap-2 p-3 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
                                     :class="form.school_class_ids.includes(String(klass.id)) ? 'border-primary bg-primary/5' : ''">
-                                    <input 
+                                    <input
                                         type="checkbox"
                                         :checked="form.school_class_ids.includes(String(klass.id))"
                                         @change="toggleClass(String(klass.id))"
@@ -248,7 +252,7 @@ const areSelectedClassesValid = computed(() => {
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-3 p-3 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
                                         :class="form.school_class_ids.includes('primary') ? 'border-primary bg-primary/5' : ''">
-                                        <input 
+                                        <input
                                             type="checkbox"
                                             :checked="form.school_class_ids.includes('primary')"
                                             @change="toggleGroup('primary')"
@@ -269,7 +273,7 @@ const areSelectedClassesValid = computed(() => {
                                 <div class="space-y-2">
                                     <label class="flex items-center gap-3 p-3 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
                                         :class="form.school_class_ids.includes('secondary') ? 'border-primary bg-primary/5' : ''">
-                                        <input 
+                                        <input
                                             type="checkbox"
                                             :checked="form.school_class_ids.includes('secondary')"
                                             @change="toggleGroup('secondary')"
@@ -296,7 +300,7 @@ const areSelectedClassesValid = computed(() => {
                                     <SelectValue placeholder="All year (leave empty)" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="">All Year</SelectItem>
+                                    <SelectItem :value="null">All Year</SelectItem>
                                     <SelectItem v-for="term in terms" :key="term.id" :value="String(term.id)">
                                         {{ term.name }}
                                     </SelectItem>
@@ -310,9 +314,9 @@ const areSelectedClassesValid = computed(() => {
                     <div class="space-y-4 py-6">
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-semibold">Fee Items</h3>
-                            <Button 
-                                type="button" 
-                                variant="outline" 
+                            <Button
+                                type="button"
+                                variant="outline"
                                 size="sm"
                                 @click="addFeeItem"
                                 class="gap-1">
@@ -329,76 +333,76 @@ const areSelectedClassesValid = computed(() => {
                             </p>
                         </div>
 
-                        <div v-for="(item, index) in form.fee_items" :key="index" class="rounded-lg border p-4 bg-muted/30">
-                            <div class="grid grid-cols-12 gap-3 items-start">
-                                <!-- Fee Item Select -->
-                                <div class="col-span-5">
-                                    <Field :data-invalid="errors[`fee_items.${index}.fee_item_id`]">
+                        <div
+                            v-for="(item, index) in form.fee_items"
+                            :key="index" class="rounded-lg border p-4 bg-muted/30 relative overflow-hidden">
+                            <FieldGroup>
+                                <section class="flex items-end gap-4">
+                                    <!-- Fee Item Select -->
+                                    <Field :data-invalid="errors[`fee_items.${index}.fee_item_id`]" class="w-full">
                                         <FieldLabel :for="`fee-item-${index}`">Fee Item *</FieldLabel>
                                         <Select v-model="item.fee_item_id">
-                                            <SelectTrigger :id="`fee-item-${index}`" class="bg-background">
+                                            <SelectTrigger :id="`fee-item-${index}`">
                                                 <SelectValue placeholder="Select fee" />
                                             </SelectTrigger>
+
                                             <SelectContent>
                                                 <SelectItem v-for="fee in feeItems" :key="fee.id" :value="String(fee.id)">
                                                     {{ fee.name }} ({{ fee.code }})
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <InputError class="mt-1" :message="errors[`fee_items.${index}.fee_item_id`]" />
+                                        <InputError :message="errors[`fee_items.${index}.fee_item_id`]" />
                                     </Field>
-                                </div>
 
-                                <!-- Amount -->
-                                <div class="col-span-3">
-                                    <Field :data-invalid="errors[`fee_items.${index}.amount`]">
+                                    <!-- Amount -->
+                                    <Field :data-invalid="errors[`fee_items.${index}.amount`]" class="max-w-[100px]">
                                         <FieldLabel :for="`amount-${index}`">Amount (MK) *</FieldLabel>
-                                        <Input 
+                                        <Input
                                             :id="`amount-${index}`"
                                             v-model="item.amount"
                                             type="number"
                                             step="0.01"
                                             min="0"
                                             placeholder="0.00"
-                                            class="bg-background" />
-                                        <InputError class="mt-1" :message="errors[`fee_items.${index}.amount`]" />
-                                    </Field>
-                                </div>
+                                        />
 
-                                <!-- Quantity -->
-                                <div class="col-span-2">
-                                    <Field :data-invalid="errors[`fee_items.${index}.quantity`]">
+                                        <InputError :message="errors[`fee_items.${index}.amount`]" />
+                                    </Field>
+
+                                    <!-- Quantity -->
+                                    <Field :data-invalid="errors[`fee_items.${index}.quantity`]" class="max-w-[60px]">
                                         <FieldLabel :for="`qty-${index}`">Qty</FieldLabel>
-                                        <Input 
+                                        <Input
                                             :id="`qty-${index}`"
                                             v-model.number="item.quantity"
                                             type="number"
                                             min="1"
                                             :value="item.quantity || 1"
-                                            class="bg-background" />
-                                        <InputError class="mt-1" :message="errors[`fee_items.${index}.quantity`]" />
-                                    </Field>
-                                </div>
+                                        />
 
-                                <!-- Delete Button -->
-                                <div class="col-span-2 pt-7">
-                                    <Button 
-                                        v-if="form.fee_items.length > 1"
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        @click="removeFeeItem(index)"
-                                        class="w-full">
-                                        <Trash2 class="h-4 w-4 text-destructive" />
-                                    </Button>
-                                </div>
-                            </div>
+                                        <InputError :message="errors[`fee_items.${index}.quantity`]" />
+                                    </Field>
+
+                                    <!-- Delete Button -->
+                                    <div class="absolute -top-0.5 -right-0.5">
+                                        <Button
+                                            v-if="form.fee_items.length > 1"
+                                            type="button"
+                                            variant="destructive"
+                                            size="icon-sm"
+                                            @click="removeFeeItem(index)">
+                                            <Trash2 />
+                                        </Button>
+                                    </div>
+                                </section>
+                            </FieldGroup>
 
                             <!-- Notes -->
                             <div class="mt-3">
                                 <Field>
                                     <FieldLabel :for="`notes-${index}`">Notes</FieldLabel>
-                                    <Textarea 
+                                    <Textarea
                                         :id="`notes-${index}`"
                                         v-model="item.notes"
                                         placeholder="Optional notes"
@@ -417,18 +421,22 @@ const areSelectedClassesValid = computed(() => {
 
                         <InputError v-if="errors['fee_items']" :message="errors['fee_items']" />
                     </div>
-
-                    <ModalFooter>
-                        <Button type="button" variant="outline" @click="close">
-                            Cancel
-                        </Button>
-                        <Button type="submit" :disabled="processing || !areSelectedClassesValid">
-                            <Spinner v-if="processing" />
-                            {{ processing ? 'Assigning...' : 'Assign Fees' }}
-                        </Button>
-                    </ModalFooter>
                 </Form>
             </ModalScrollable>
+
+            <ModalFooter>
+                <Button type="button" variant="outline" @click="close">
+                    Cancel
+                </Button>
+
+                <Button
+                    type="submit"
+                    @click="createForm?.submit"
+                    :disabled="createForm?.processing || !areSelectedClassesValid">
+                    <Spinner v-if="createForm?.processing" />
+                    {{ createForm?.processing ? 'Assigning...' : 'Assign Fees' }}
+                </Button>
+            </ModalFooter>
         </ModalRoot>
     </Modal>
 </template>

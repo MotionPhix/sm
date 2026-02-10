@@ -14,13 +14,15 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <Toaster position="top-right" rich-colors />
-    
+
     <AppLayout
         :breadcrumbs="breadcrumbs">
         <template #act>
             <slot name="act" />
         </template>
 
-        <slot />
+        <div class="w-full max-w-6xl">
+            <slot />
+        </div>
     </AppLayout>
 </template>

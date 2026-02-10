@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class School extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'name', 
-        'code', 
-        'email', 
-        'phone', 
+        'name',
+        'code',
+        'email',
+        'phone',
         'is_active',
         'activated_at',
         'type', // primary, secondary, private, etc
@@ -75,4 +76,8 @@ class School extends Model
         return $this->hasMany(FeeStructure::class);
     }
 
+    public function applicants()
+    {
+        return $this->hasMany(Applicant::class);
+    }
 }

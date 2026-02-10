@@ -33,6 +33,13 @@ class FeeStructureFactory extends Factory
         ];
     }
 
+    public function forSchool(School $school): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'school_id' => $school->id,
+        ]);
+    }
+
     public function withTerm(Term $term): self
     {
         return $this->state(fn (array $attributes) => [

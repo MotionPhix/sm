@@ -8,6 +8,7 @@ interface Enrollment {
     id: number
     is_active: boolean
     created_at: string
+    enrollment_date?: string
     classroom: {
         class: { name: string }
         stream?: { name: string }
@@ -110,7 +111,7 @@ const activeEnrollment = computed(() => {
                                 </div>
 
                                 <p class="text-sm text-muted-foreground">
-                                    Enrolled: {{ formatDate(enrollment.created_at) }}
+                                    Enrolled: {{ formatDate(enrollment.enrollment_date || enrollment.created_at) }}
                                 </p>
 
                                 <p v-if="enrollment.transferred_out_at" class="text-sm text-muted-foreground">

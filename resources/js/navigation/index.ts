@@ -7,11 +7,13 @@ import {
   Settings,
   Calendar,
   ClipboardCheck,
+  FileText,
 } from 'lucide-vue-next'
 import type { NavItem } from '@/types'
 import * as admin from '@/routes/admin'
 import * as teacher from '@/routes/teacher'
 import * as registrar from '@/routes/registrar'
+import * as bursar from '@/routes/bursar'
 import { redirect as dashboardRedirect } from '@/routes/dashboard'
 
 export const navigation = {
@@ -34,7 +36,8 @@ export const navigation = {
   ],
 
   bursar: <NavItem[]>[
-    { title: 'Dashboard', href: dashboardRedirect.url(), icon: LayoutGrid },
+    { title: 'Dashboard', href: bursar.dashboard.url(), icon: LayoutGrid },
+    { title: 'Invoices', href: bursar.default.invoices.index.url(), icon: FileText },
   ],
 
   registrar: <NavItem[]>[

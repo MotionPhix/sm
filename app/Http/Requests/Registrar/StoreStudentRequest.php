@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Registrar;
 
-use App\Models\Applicant;
-use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,16 +26,17 @@ class StoreStudentRequest extends FormRequest
                 }),
             ],
             'first_name' => [
-                'required',
+                'required_without:applicant_id',
+                'nullable',
                 'string',
                 'max:100',
                 Rule::unique('students')->where(fn ($q) => $q->where('school_id', $schoolId)),
             ],
             'middle_name' => ['nullable', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'gender' => ['required', 'string', Rule::in(['male', 'female'])],
-            'date_of_birth' => ['required', 'date', 'before:today'],
-            'admission_date' => ['required', 'date'],
+            'last_name' => ['required_without:applicant_id', 'nullable', 'string', 'max:100'],
+            'gender' => ['required_without:applicant_id', 'nullable', 'string', Rule::in(['male', 'female'])],
+            'date_of_birth' => ['required_without:applicant_id', 'nullable', 'date', 'before:today'],
+            'admission_date' => ['required_without:applicant_id', 'nullable', 'date'],
             'national_id' => ['nullable', 'string', 'max:20'],
             'enroll_immediately' => ['sometimes', 'boolean'],
             'class_stream_assignment_id' => [

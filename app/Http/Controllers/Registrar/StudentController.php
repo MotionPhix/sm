@@ -113,6 +113,7 @@ class StudentController extends Controller
 
         return Inertia::render('registrar/students/Show', [
             'student' => $student,
+            'guardians' => $student->guardians,
             'currentAcademicYear' => $currentAcademicYear,
             'availableClasses' => $availableClasses,
             'availableStreams' => $availableStreams,
@@ -161,6 +162,13 @@ class StudentController extends Controller
         } else {
             // Direct enrollment
             $student = $this->studentService->createStudent($school->id, $validated);
+        }
+
+        if (! empty($validated['enroll_immediately']) && ! empty($validated['class_stream_assignment_id'])) {
+            $this->studentService->enrollStudent($student, [
+                'class_stream_assignment_id' => $validated['class_stream_assignment_id'],
+                'enrollment_date' => $validated['admission_date'] ?? now()->toDateString(),
+            ]);
         }
 
         return redirect()->route('registrar.students.show', $student)

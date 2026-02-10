@@ -8,7 +8,6 @@ use App\Models\ClassStreamAssignment;
 use App\Models\School;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -36,13 +35,13 @@ class StudentService
             $sequence = 1;
         }
 
-        $admissionNumber = $prefix . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+        $admissionNumber = $prefix.str_pad($sequence, 4, '0', STR_PAD_LEFT);
 
         // Ensure uniqueness (in case of race condition)
         $attempts = 0;
         while (Student::where('admission_number', $admissionNumber)->exists() && $attempts < 10) {
             $sequence++;
-            $admissionNumber = $prefix . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+            $admissionNumber = $prefix.str_pad($sequence, 4, '0', STR_PAD_LEFT);
             $attempts++;
         }
 
@@ -84,6 +83,7 @@ class StudentService
             // Create student from applicant data
             $student = Student::create([
                 'school_id' => $school->id,
+                'applicant_id' => $applicant->id,
                 'admission_number' => $this->generateAdmissionNumber($school),
                 'first_name' => $data['first_name'] ?? $applicant->first_name,
                 'middle_name' => $data['middle_name'] ?? null,
@@ -136,6 +136,7 @@ class StudentService
                 'student_id' => $student->id,
                 'class_stream_assignment_id' => $classStreamAssignment->id,
                 'is_active' => true,
+                'enrollment_date' => $data['enrollment_date'] ?? now()->toDateString(),
             ]);
 
             // Update student's current class reference
@@ -182,6 +183,7 @@ class StudentService
                 'class_stream_assignment_id' => $targetAssignment->id,
                 'is_active' => true,
                 'transferred_in_at' => $data['transfer_date'],
+                'enrollment_date' => $data['transfer_date'],
             ]);
 
             // Update student's current class reference
@@ -205,7 +207,7 @@ class StudentService
                 ->update([
                     'is_active' => false,
                     'transferred_out_at' => $data['withdrawal_date'],
-                    'transfer_reason' => 'Withdrawal: ' . $data['reason'],
+                    'transfer_reason' => 'Withdrawal: '.$data['reason'],
                 ]);
 
             // Clear current class reference

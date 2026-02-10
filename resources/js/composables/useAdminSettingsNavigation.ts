@@ -6,7 +6,11 @@ import {
     Clock, 
     GraduationCap, 
     DollarSign, 
-    Construction 
+    Construction,
+    BookOpen,
+    SplitSquareHorizontal,
+    Building2,
+    School
 } from 'lucide-vue-next'
 import { 
     index as academicYearsIndex
@@ -23,6 +27,18 @@ import {
 import { 
     index as feeStructuresIndex 
 } from '@/routes/admin/settings/fee-structures'
+import {
+    index as classesIndex
+} from '@/routes/admin/settings/classes'
+import {
+    index as streamsIndex
+} from '@/routes/admin/settings/streams'
+import {
+    index as subjectsIndex
+} from '@/routes/admin/settings/subjects'
+import {
+    show as schoolProfileShow
+} from '@/routes/admin/settings/school-profile'
 
 /**
  * Composable for Admin Settings secondary navigation
@@ -76,21 +92,35 @@ export function useAdminSettingsNavigation() {
      * Used in all admin settings pages
      */
     const adminSettingsNavItems = computed((): NavItem[] => {
-        const academicYearsHref = academicYearsIndex().url
-        const termsHref = termsIndex().url
-        const admissionCyclesHref = admissionCyclesIndex().url
-        const feeItemsHref = feeItemsIndex().url
-        const feeStructuresHref = feeStructuresIndex().url
+        const schoolProfileHref = schoolProfileShow.url()
+        const academicYearsHref = academicYearsIndex.url()
+        const termsHref = termsIndex.url()
+        const classesHref = classesIndex.url()
+        const streamsHref = streamsIndex.url()
+        const subjectsHref = subjectsIndex.url()
+        const admissionCyclesHref = admissionCyclesIndex.url()
+        const feeItemsHref = feeItemsIndex.url()
+        const feeStructuresHref = feeStructuresIndex.url()
 
         const allHrefs = [
+            schoolProfileHref,
             academicYearsHref,
             termsHref,
+            classesHref,
+            streamsHref,
+            subjectsHref,
             admissionCyclesHref,
             feeItemsHref,
             feeStructuresHref,
         ]
 
         return [
+            {
+                title: 'School Profile',
+                icon: School,
+                href: schoolProfileHref,
+                isActive: isNavItemActive(schoolProfileHref, allHrefs.filter(h => h !== schoolProfileHref)),
+            },
             {
                 title: 'Academic Years',
                 icon: Calendar,
@@ -102,6 +132,24 @@ export function useAdminSettingsNavigation() {
                 icon: Clock,
                 href: termsHref,
                 isActive: isNavItemActive(termsHref, allHrefs.filter(h => h !== termsHref)),
+            },
+            {
+                title: 'Classes',
+                icon: Building2,
+                href: classesHref,
+                isActive: isNavItemActive(classesHref, allHrefs.filter(h => h !== classesHref)),
+            },
+            {
+                title: 'Streams',
+                icon: SplitSquareHorizontal,
+                href: streamsHref,
+                isActive: isNavItemActive(streamsHref, allHrefs.filter(h => h !== streamsHref)),
+            },
+            {
+                title: 'Subjects',
+                icon: BookOpen,
+                href: subjectsHref,
+                isActive: isNavItemActive(subjectsHref, allHrefs.filter(h => h !== subjectsHref)),
             },
             {
                 title: 'Admission Cycles',

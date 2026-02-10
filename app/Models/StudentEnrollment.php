@@ -2,25 +2,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Builder;
 
 class StudentEnrollment extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'student_id',
         'class_stream_assignment_id',
         'is_active',
+        'enrollment_date',
+        'transferred_in_at',
+        'transferred_out_at',
+        'transfer_reason',
+        'notes',
     ];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'enrollment_date' => 'date',
+            'transferred_in_at' => 'date',
+            'transferred_out_at' => 'date',
         ];
     }
 
@@ -28,7 +36,7 @@ class StudentEnrollment extends Model
     {
         // Scope enrollments by current school via the related class_stream_assignment
         static::addGlobalScope('tenant_enrollment', function (Builder $builder) {
-            if (!app()->bound('currentSchool')) {
+            if (! app()->bound('currentSchool')) {
                 return;
             }
 

@@ -5,9 +5,12 @@ use App\Http\Controllers\Admin\AdmissionCycleController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FeeItemController;
 use App\Http\Controllers\Admin\FeeStructureController;
+use App\Http\Controllers\Admin\SchoolClassController;
+use App\Http\Controllers\Admin\SchoolProfileController;
+use App\Http\Controllers\Admin\StreamController;
+use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TermController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
     ->prefix('admin')
@@ -34,8 +37,15 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
         Route::prefix('settings')
             ->name('settings.')
             ->group(function () {
-                // Permissions for settings modules
-                // Consider gating each group with permission middleware in future
+                // School Profile
+                Route::get('/school-profile', [SchoolProfileController::class, 'show'])
+                    ->name('school-profile.show');
+                Route::get('/school-profile/edit', [SchoolProfileController::class, 'edit'])
+                    ->name('school-profile.edit');
+                Route::put('/school-profile', [SchoolProfileController::class, 'update'])
+                    ->name('school-profile.update');
+
+                // Academic Years
                 Route::get(
                     '/academic-years',
                     [AcademicYearController::class, 'index']
@@ -46,36 +56,7 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
                     [AcademicYearController::class, 'store']
                 )->name('academic-year.store');
 
-                Route::get(
-                    '/admission-cycles',
-                    [AdmissionCycleController::class, 'index']
-                )->name('admission-cycles.index');
-
-                Route::get(
-                    '/admission-cycles/create',
-                    [AdmissionCycleController::class, 'create']
-                )->name('admission-cycles.create');
-
-                Route::get(
-                    '/admission-cycles/{admissionCycle}/edit',
-                    [AdmissionCycleController::class, 'edit']
-                )->name('admission-cycles.edit');
-
-                Route::post(
-                    '/admission-cycles',
-                    [AdmissionCycleController::class, 'store']
-                )->name('admission-cycles.store');
-
-                Route::put(
-                    '/admission-cycles/{admissionCycle}',
-                    [AdmissionCycleController::class, 'update']
-                )->name('admission-cycles.update');
-
-                Route::delete(
-                    '/admission-cycles/{admissionCycle}',
-                    [AdmissionCycleController::class, 'destroy']
-                )->name('admission-cycles.destroy');
-
+                // Terms
                 Route::get(
                     '/terms',
                     [TermController::class, 'index']
@@ -110,6 +91,50 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
                     '/terms/generate-defaults',
                     [TermController::class, 'generateDefaults']
                 )->name('terms.generate-defaults');
+
+                // Classes
+                Route::resource('classes', SchoolClassController::class)
+                    ->except(['show'])
+                    ->parameters(['classes' => 'schoolClass']);
+
+                // Streams
+                Route::resource('streams', StreamController::class)
+                    ->except(['show']);
+
+                // Subjects
+                Route::resource('subjects', SubjectController::class)
+                    ->except(['show']);
+
+                // Admission Cycles
+                Route::get(
+                    '/admission-cycles',
+                    [AdmissionCycleController::class, 'index']
+                )->name('admission-cycles.index');
+
+                Route::get(
+                    '/admission-cycles/create',
+                    [AdmissionCycleController::class, 'create']
+                )->name('admission-cycles.create');
+
+                Route::get(
+                    '/admission-cycles/{admissionCycle}/edit',
+                    [AdmissionCycleController::class, 'edit']
+                )->name('admission-cycles.edit');
+
+                Route::post(
+                    '/admission-cycles',
+                    [AdmissionCycleController::class, 'store']
+                )->name('admission-cycles.store');
+
+                Route::put(
+                    '/admission-cycles/{admissionCycle}',
+                    [AdmissionCycleController::class, 'update']
+                )->name('admission-cycles.update');
+
+                Route::delete(
+                    '/admission-cycles/{admissionCycle}',
+                    [AdmissionCycleController::class, 'destroy']
+                )->name('admission-cycles.destroy');
 
                 // Fee Items
                 Route::get(
@@ -173,6 +198,5 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
                     [FeeStructureController::class, 'destroy']
                 )->name('fee-structures.destroy');
             });
-
 
     });

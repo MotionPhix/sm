@@ -1,29 +1,28 @@
 <script setup lang="ts">
-import { Head, router, usePage } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
-import { Button } from '@/components/ui/button'
-import AppLayout from '@/layouts/AppLayout.vue'
-import AdminSettingsLayout from '@/layouts/AdminSettingsLayout.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import HeadingSmall from '@/components/HeadingSmall.vue'
-import InputError from '@/components/InputError.vue'
-import { Plus, Trash2, Edit2, DollarSign, Check, AlertCircle, Tag } from 'lucide-vue-next'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import {
     Table,
     TableBody,
     TableCell,
     TableHead,
     TableHeader,
-    TableRow,
-    TableEmpty,
+    TableRow
 } from '@/components/ui/table'
-import { ModalLink } from '@inertiaui/modal-vue'
-import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { useConfirm } from '@/composables/useConfirm'
-import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
 import { useAdminSettingsNavigation } from '@/composables/useAdminSettingsNavigation'
-import { create as feeItemsCreate, edit as feeItemsEdit, destroy as feeItemsDestroy } from '@/routes/admin/settings/fee-items'
+import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
+import { useConfirm } from '@/composables/useConfirm'
+import AdminSettingsLayout from '@/layouts/AdminSettingsLayout.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import { create as feeItemsCreate, destroy as feeItemsDestroy, edit as feeItemsEdit } from '@/routes/admin/settings/fee-items'
+import { Head, router, usePage } from '@inertiajs/vue3'
+import { ModalLink } from '@inertiaui/modal-vue'
+import { AlertCircle, Check, DollarSign, Edit2, Plus, Tag, Trash2 } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
 
 interface FeeItem {
     id: number
@@ -94,18 +93,18 @@ const getCategoryColor = (category: string): string => {
             </Button>
         </template>
 
-        <AdminSettingsLayout 
+        <AdminSettingsLayout
             title="School Settings"
-            description="Configure your school's academic calendar and other settings" 
+            description="Configure your school's academic calendar and other settings"
             :items="adminSettingsNavItems">
             <div class="space-y-6">
-                <HeadingSmall 
+                <HeadingSmall
                     title="Fee Items"
-                    description="Define fee categories and types charged to students" 
+                    description="Define fee categories and types charged to students"
                 />
 
                 <!-- Error Alert -->
-                <Alert v-if="flash?.error" 
+                <Alert v-if="flash?.error"
                     class="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/30">
                     <AlertCircle class="h-4 w-4 text-red-600" />
                     <AlertTitle class="text-red-800 dark:text-red-200">Error</AlertTitle>
@@ -144,8 +143,9 @@ const getCategoryColor = (category: string): string => {
                                     <TableHead class="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody v-if="feeItems.data.length > 0">
-                                <TableRow v-for="item in feeItems.data" :key="item.id">
+                            <TableBody>
+                                <TableRow
+                                    v-for="item in feeItems.data" :key="item.id">
                                     <TableCell class="font-medium">
                                         {{ item.name }}
                                     </TableCell>
@@ -180,19 +180,35 @@ const getCategoryColor = (category: string): string => {
                                         </div>
                                     </TableCell>
                                 </TableRow>
+
+                                <TableRow v-if="feeItems.data.length === 0">
+                                    <TableCell colspan="6" class="p-6">
+                                        <Empty>
+                                            <EmptyHeader>
+                                                <EmptyMedia>
+                                                    <DollarSign class="size-12 text-muted-foreground" />
+                                                </EmptyMedia>
+
+                                                <EmptyTitle>
+                                                    No fee items defined
+                                                </EmptyTitle>
+
+                                                <EmptyDescription>
+                                                    Fee items are the individual charges (e.g., Tuition, Exam Fee) that make up your fee structures.
+                                                </EmptyDescription>
+                                            </EmptyHeader>
+
+                                            <Button
+                                                :as="ModalLink"
+                                                :href="feeItemsCreate().url">
+                                                <Plus class="mr-2 h-4 w-4" />
+                                                Create First Fee Item
+                                            </Button>
+                                        </Empty>
+                                    </TableCell>
+                                </TableRow>
                             </TableBody>
                         </Table>
-                        <TableEmpty v-if="feeItems.data.length === 0">
-                            <DollarSign class="mx-auto h-12 w-12 text-muted-foreground" />
-                            <h3 class="mt-4 text-sm font-medium">No fee items yet</h3>
-                            <p class="mt-2 text-sm text-muted-foreground">
-                                Create fee item categories that students will be charged for.
-                            </p>
-                            <Button class="mt-4" :as="ModalLink" :href="feeItemsCreate().url">
-                                <Plus class="mr-2 h-4 w-4" />
-                                Create First Fee Item
-                            </Button>
-                        </TableEmpty>
                     </div>
                 </div>
 
