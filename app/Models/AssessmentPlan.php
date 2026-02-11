@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Concerns\TenantScoped as TenantScope;
 
 class AssessmentPlan extends Model
@@ -35,4 +36,9 @@ class AssessmentPlan extends Model
     public function academicYear(): BelongsTo { return $this->belongsTo(AcademicYear::class); }
     public function term(): BelongsTo { return $this->belongsTo(Term::class); }
     public function subject(): BelongsTo { return $this->belongsTo(Subject::class); }
+
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
 }

@@ -7,6 +7,7 @@ import {
   Settings,
   Calendar,
   ClipboardCheck,
+  ClipboardList,
   FileText,
 } from 'lucide-vue-next'
 import type { NavItem } from '@/types'
@@ -27,12 +28,14 @@ export const navigation = {
     { title: 'Dashboard', href: teacher.dashboard.url(), icon: LayoutGrid },
     { title: 'Timetable', href: teacher.default.timetable.index.url(), icon: Calendar },
     { title: 'Attendance', href: teacher.default.attendance.index.url(), icon: ClipboardCheck },
+    { title: 'Gradebook', href: teacher.default.gradebook.index.url(), icon: ClipboardList },
   ],
 
   teacher: <NavItem[]>[
     { title: 'Dashboard', href: teacher.dashboard.url(), icon: LayoutGrid },
     { title: 'Timetable', href: teacher.default.timetable.index.url(), icon: Calendar },
     { title: 'Attendance', href: teacher.default.attendance.index.url(), icon: ClipboardCheck },
+    { title: 'Gradebook', href: teacher.default.gradebook.index.url(), icon: ClipboardList },
   ],
 
   bursar: <NavItem[]>[

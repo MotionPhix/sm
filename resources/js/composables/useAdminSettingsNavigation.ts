@@ -1,16 +1,18 @@
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import type { NavItem } from '@/types'
-import { 
-    Calendar, 
-    Clock, 
-    GraduationCap, 
-    DollarSign, 
+import {
+    Calendar,
+    Clock,
+    GraduationCap,
+    DollarSign,
     Construction,
     BookOpen,
     SplitSquareHorizontal,
     Building2,
-    School
+    School,
+    ClipboardList,
+    BarChart3,
 } from 'lucide-vue-next'
 import { 
     index as academicYearsIndex
@@ -39,6 +41,12 @@ import {
 import {
     show as schoolProfileShow
 } from '@/routes/admin/settings/school-profile'
+import {
+    index as assessmentPlansIndex
+} from '@/routes/admin/settings/assessment-plans'
+import {
+    index as gradeScalesIndex
+} from '@/routes/admin/settings/grade-scales'
 
 /**
  * Composable for Admin Settings secondary navigation
@@ -101,6 +109,8 @@ export function useAdminSettingsNavigation() {
         const admissionCyclesHref = admissionCyclesIndex.url()
         const feeItemsHref = feeItemsIndex.url()
         const feeStructuresHref = feeStructuresIndex.url()
+        const assessmentPlansHref = assessmentPlansIndex.url()
+        const gradeScalesHref = gradeScalesIndex.url()
 
         const allHrefs = [
             schoolProfileHref,
@@ -112,6 +122,8 @@ export function useAdminSettingsNavigation() {
             admissionCyclesHref,
             feeItemsHref,
             feeStructuresHref,
+            assessmentPlansHref,
+            gradeScalesHref,
         ]
 
         return [
@@ -168,6 +180,18 @@ export function useAdminSettingsNavigation() {
                 icon: Construction,
                 href: feeStructuresHref,
                 isActive: isNavItemActive(feeStructuresHref, allHrefs.filter(h => h !== feeStructuresHref)),
+            },
+            {
+                title: 'Assessment Plans',
+                icon: ClipboardList,
+                href: assessmentPlansHref,
+                isActive: isNavItemActive(assessmentPlansHref, allHrefs.filter(h => h !== assessmentPlansHref)),
+            },
+            {
+                title: 'Grading Scales',
+                icon: BarChart3,
+                href: gradeScalesHref,
+                isActive: isNavItemActive(gradeScalesHref, allHrefs.filter(h => h !== gradeScalesHref)),
             },
         ]
     })

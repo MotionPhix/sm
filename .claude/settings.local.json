@@ -8,7 +8,11 @@
       "mcp__laravel-boost__list-routes",
       "Bash(php artisan test:*)",
       "Bash(dir:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(ls -la \"d:\\\\Herd\\\\school\\\\app\\\\Models\\\\Concerns\"\" 2>/dev/null || find \"d:Herdschool\" -name \"*Tenant*\" -o -name \"*Scoped* \")",
+      "Bash(php artisan make:migration:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Users\\\\Axel\\\\.config\\\\herd\\\\bin\\\\php.bat\" artisan make:migration add_subject_id_to_teacher_assignments_table --no-interaction)"
     ]
   }
 }

@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\TenantScoped as TenantScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Concerns\TenantScoped as TenantScope;
 
-class Subject extends Model
+class GradeScale extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'school_id',
         'name',
-        'code',
+        'description',
     ];
 
     protected static function booted(): void
@@ -34,13 +34,8 @@ class Subject extends Model
         return $this->belongsTo(School::class);
     }
 
-    public function teacherAssignments(): HasMany
+    public function steps(): HasMany
     {
-        return $this->hasMany(TeacherAssignment::class);
-    }
-
-    public function assessmentPlans(): HasMany
-    {
-        return $this->hasMany(AssessmentPlan::class);
+        return $this->hasMany(GradeScaleStep::class)->orderBy('ordering');
     }
 }

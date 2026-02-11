@@ -60,6 +60,11 @@ class ClassStreamAssignment extends Model
         return $this->hasMany(StudentEnrollment::class);
     }
 
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
+
     /**
      * Get the display name for this class/stream combination.
      */

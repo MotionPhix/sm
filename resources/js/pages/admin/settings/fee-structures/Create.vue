@@ -7,7 +7,7 @@ import {
     ModalScrollable,
 } from '@/components/modal'
 import { Button } from '@/components/ui/button'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldSet, FieldTitle } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
@@ -17,6 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
 import { store } from '@/routes/admin/settings/fee-structures'
@@ -165,8 +166,10 @@ const areSelectedClassesValid = computed(() => {
         <Head title="Assign Fees to Classes" />
 
         <ModalRoot>
-            <ModalHeader title="Assign Fees to Classes"
-                description="Select how to group classes and assign fees" />
+            <ModalHeader 
+                title="Assign Fees to Classes"
+                description="Select how to group classes and assign fees" 
+            />
 
             <ModalScrollable>
                 <Form ref="createForm" v-bind="{ url: store().url, method: 'post', data: form }"
@@ -174,58 +177,67 @@ const areSelectedClassesValid = computed(() => {
                     :options="{ preserveScroll: true }">
 
                     <!-- Grouping Strategy Selection -->
-                    <FieldGroup class="space-y-4 border-b pb-6">
-                        <div>
-                            <FieldLabel>How would you like to assign fees? *</FieldLabel>
-                            <p class="text-xs text-muted-foreground mt-1 mb-4">Choose whether to set fees per individual class or use predefined groupings</p>
-                        </div>
+                    <FieldGroup>
+                        <FieldSet>
+                            <FieldLegend variant="label">
+                                How would you like to assign fees? *
+                            </FieldLegend>
 
-                        <!-- Per Class Option -->
-                        <RadioGroup class="flex items-start gap-3 p-4 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
-                            @click="updateGroupingStrategy('individual')">
-                            <RadioGroupItem
-                                :id="'strategy-individual'"
-                                :value="'individual'"
-                                :checked="groupingStrategy === 'individual'"
-                                class="mt-1" />
-                            <div class="flex-1">
-                                <label :for="'strategy-individual'" class="font-medium text-sm cursor-pointer">
-                                    Per Individual Class
-                                </label>
-                                <p class="text-xs text-muted-foreground mt-1">
-                                    Set different fees for each class. Useful when classes have significantly different fee structures.
-                                </p>
-                            </div>
-                        </RadioGroup>
+                            <FieldDescription class="text-xs text-muted-foreground">
+                                Choose whether to set fees per individual class or use predefined groupings
+                            </FieldDescription>
 
-                        <!-- Primary & Secondary Option -->
-                        <RadioGroup
-                            class="flex items-start gap-3 p-4 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
-                            @click="updateGroupingStrategy('primary-secondary')">
-                            <RadioGroupItem
-                                :id="'strategy-groups'"
-                                :value="'primary-secondary'"
-                                :checked="groupingStrategy === 'primary-secondary'"
-                                class="mt-1"
-                            />
+                            <RadioGroup defaultvalue="individual">
+                                <FieldLabel for="strategy_individual">
+                                    <Field orientation="horizontal">
+                                        <RadioGroupItem 
+                                            id="strategy_individual"
+                                            value="individual"
+                                            @click="updateGroupingStrategy('individual')"
+                                            :checked="groupingStrategy === 'individual'"
+                                        />
 
-                            <div class="flex-1">
-                                <label :for="'strategy-groups'" class="font-medium text-sm cursor-pointer">
-                                    Primary & Secondary Grouping
-                                </label>
+                                        <FieldContent>
+                                            <FieldTitle>
+                                                Per Individual Class
+                                            </FieldTitle>
 
-                                <p class="text-xs text-muted-foreground mt-1">
-                                    Group fees by Primary (Standard 1-8) and Secondary (Form 1-4) classes. Saves time when most classes in a level share the same fees.
-                                </p>
-                            </div>
-                        </RadioGroup>
+                                            <FieldDescription>
+                                                Set different fees for each class. Useful when classes have significantly different fee structures.
+                                            </FieldDescription>
+                                        </FieldContent>
+                                    </Field>
+                                </FieldLabel>
+
+                                <FieldLabel for="strategy_groups">
+                                    <Field orientation="horizontal">
+                                        <RadioGroupItem 
+                                            id="strategy_groups"
+                                            value="primary-secondary"
+                                            @click="updateGroupingStrategy('primary-secondary')"
+                                            :checked="groupingStrategy === 'primary-secondary'"
+                                        />
+
+                                        <FieldContent>
+                                            <FieldTitle>
+                                                Primary & Secondary Grouping
+                                            </FieldTitle>
+
+                                            <FieldDescription>
+                                                Group fees by Primary (Standard 1-8) and Secondary (Form 1-4) classes. Saves time when most classes in a level share the same fees.
+                                            </FieldDescription>
+                                        </FieldContent>
+                                    </Field>
+                                </FieldLabel>
+                            </RadioGroup>
+                        </FieldSet>
                     </FieldGroup>
 
+                    <Separator class="my-6" />
+
                     <!-- Class Selection -->
-                    <FieldGroup class="space-y-4 border-b py-6">
-                        <div>
-                            <FieldLabel>Select Classes *</FieldLabel>
-                        </div>
+                    <FieldGroup>
+                        <FieldLabel>Select classes *</FieldLabel>
 
                         <!-- Individual Class Selection -->
                         <div v-if="groupingStrategy === 'individual'" class="space-y-2">

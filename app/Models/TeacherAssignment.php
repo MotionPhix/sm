@@ -13,6 +13,7 @@ class TeacherAssignment extends Model
     protected $fillable = [
         'user_id',
         'class_stream_assignment_id',
+        'subject_id',
         'school_id',
         'academic_year_id',
         'schedule_data',
@@ -88,5 +89,10 @@ class TeacherAssignment extends Model
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(ClassStreamAssignment::class, 'class_stream_assignment_id');
+    }
+
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
     }
 }

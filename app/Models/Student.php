@@ -82,4 +82,9 @@ class Student extends Model
     {
         return $this->belongsTo(ClassStreamAssignment::class, 'current_class_stream_assignment_id');
     }
+
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
 }

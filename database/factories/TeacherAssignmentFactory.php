@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\AcademicYear;
 use App\Models\ClassStreamAssignment;
 use App\Models\School;
+use App\Models\Subject;
 use App\Models\TeacherAssignment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -24,6 +25,7 @@ class TeacherAssignmentFactory extends Factory
         return [
             'user_id' => User::factory(),
             'class_stream_assignment_id' => ClassStreamAssignment::factory()->forAcademicYear($year),
+            'subject_id' => Subject::factory()->forSchool($school),
             'school_id' => $school->id,
             'academic_year_id' => $year->id,
             'schedule_data' => null,
@@ -43,6 +45,13 @@ class TeacherAssignmentFactory extends Factory
             'class_stream_assignment_id' => $classroom->id,
             'school_id' => $classroom->school_id,
             'academic_year_id' => $classroom->academic_year_id,
+        ]);
+    }
+
+    public function forSubject(Subject $subject): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'subject_id' => $subject->id,
         ]);
     }
 

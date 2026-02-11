@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdmissionCycleController;
+use App\Http\Controllers\Admin\AssessmentPlanController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FeeItemController;
 use App\Http\Controllers\Admin\FeeStructureController;
+use App\Http\Controllers\Admin\GradeScaleController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SchoolProfileController;
 use App\Http\Controllers\Admin\StreamController;
@@ -166,6 +168,34 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
                     '/fee-items/{feeItem}',
                     [FeeItemController::class, 'destroy']
                 )->name('fee-items.destroy');
+
+                // Assessment Plans
+                Route::get('/assessment-plans', [AssessmentPlanController::class, 'index'])
+                    ->name('assessment-plans.index');
+                Route::get('/assessment-plans/create', [AssessmentPlanController::class, 'create'])
+                    ->name('assessment-plans.create');
+                Route::post('/assessment-plans', [AssessmentPlanController::class, 'store'])
+                    ->name('assessment-plans.store');
+                Route::get('/assessment-plans/{assessmentPlan}/edit', [AssessmentPlanController::class, 'edit'])
+                    ->name('assessment-plans.edit');
+                Route::put('/assessment-plans/{assessmentPlan}', [AssessmentPlanController::class, 'update'])
+                    ->name('assessment-plans.update');
+                Route::delete('/assessment-plans/{assessmentPlan}', [AssessmentPlanController::class, 'destroy'])
+                    ->name('assessment-plans.destroy');
+
+                // Grade Scales
+                Route::get('/grade-scales', [GradeScaleController::class, 'index'])
+                    ->name('grade-scales.index');
+                Route::get('/grade-scales/create', [GradeScaleController::class, 'create'])
+                    ->name('grade-scales.create');
+                Route::post('/grade-scales', [GradeScaleController::class, 'store'])
+                    ->name('grade-scales.store');
+                Route::get('/grade-scales/{gradeScale}/edit', [GradeScaleController::class, 'edit'])
+                    ->name('grade-scales.edit');
+                Route::put('/grade-scales/{gradeScale}', [GradeScaleController::class, 'update'])
+                    ->name('grade-scales.update');
+                Route::delete('/grade-scales/{gradeScale}', [GradeScaleController::class, 'destroy'])
+                    ->name('grade-scales.destroy');
 
                 // Fee Structures
                 Route::get(

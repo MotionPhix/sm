@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Teacher\AttendanceController;
+use App\Http\Controllers\Teacher\GradebookController;
 use App\Http\Controllers\Teacher\TimetableController;
 
 Route::middleware(['auth', 'verified', 'school.context', 'role:teacher,head_teacher', 'academic'])
@@ -36,6 +37,16 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:teacher,head_teac
         
         Route::middleware('permission:timetable.manage')->group(function () {
             Route::post('/timetable/check-conflicts', [TimetableController::class, 'getConflicts'])->name('timetable.check-conflicts');
+        });
+
+        // Gradebook routes
+        Route::middleware('permission:exams.view')->group(function () {
+            Route::get('/gradebook', [GradebookController::class, 'index'])->name('gradebook.index');
+            Route::get('/gradebook/show', [GradebookController::class, 'show'])->name('gradebook.show');
+            Route::get('/gradebook/summary', [GradebookController::class, 'summary'])->name('gradebook.summary');
+        });
+        Route::middleware('permission:exams.enter-marks')->group(function () {
+            Route::post('/gradebook', [GradebookController::class, 'store'])->name('gradebook.store');
         });
 
     });
