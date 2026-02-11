@@ -23,6 +23,7 @@ interface SchoolData {
     district?: string
     country?: string
     is_active: boolean
+    logo_url?: string | null
 }
 
 const props = defineProps<{
@@ -83,6 +84,13 @@ const breadcrumbs = adminSettingsBreadcrumbs('School Profile')
                         </div>
                     </div>
                     <div class="p-6">
+                        <div v-if="school.logo_url" class="mb-4">
+                            <img
+                                :src="school.logo_url"
+                                :alt="`${school.name} logo`"
+                                class="h-20 w-20 rounded-lg object-contain border bg-background p-1"
+                            />
+                        </div>
                         <dl class="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <dt class="text-sm font-medium text-muted-foreground">School Name</dt>

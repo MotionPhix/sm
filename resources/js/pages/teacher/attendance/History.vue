@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { Head, router } from '@inertiajs/vue3'
-import { reactive, computed } from 'vue'
-import { Button } from '@/components/ui/button'
-import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
+import { Button } from '@/components/ui/button'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import AppLayout from '@/layouts/AppLayout.vue'
 import type { BreadcrumbItemType } from '@/types'
+import { Head, router } from '@inertiajs/vue3'
 import { Download } from 'lucide-vue-next'
+import { computed, reactive } from 'vue'
 
 const props = defineProps<{
   records: { data: any[], links: any[], meta?: any }
@@ -56,73 +59,88 @@ const statusTotals = computed(() => {
   <AppLayout :breadcrumbs="breadcrumbs">
     <Head title="Attendance History" />
 
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <Heading
-          title="Attendance History"
-          description="Filter and export attendance records."
-        />
-        <Button @click="exportCsv">
+    <template #act>
+        <Button @click="exportCsv" variant="outline">
           <Download class="mr-2 h-4 w-4" />
           Export CSV
         </Button>
-      </div>
 
-      <div class="rounded-lg border bg-card p-6">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
-          <div>
-            <label class="mb-1 block text-sm font-medium">From</label>
-            <input
+        <Button @click="apply">Apply</Button>
+    </template>
+
+    <div class="space-y-6">
+        <Heading
+            title="Attendance History"
+            description="Filter and export attendance records."
+        />
+
+      <div class="p-6">
+        <FieldGroup class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          <Field>
+            <FieldLabel>From</FieldLabel>
+            <Input
               v-model="f.date_from"
               type="date"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             />
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">To</label>
-            <input
+          </Field>
+
+          <Field>
+            <FieldLabel>To</FieldLabel>
+            <Input
               v-model="f.date_to"
               type="date"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             />
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Class</label>
-            <select
-              v-model="f.class_id"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <option value="">All</option>
-              <option v-for="c in classes" :key="c.id" :value="c.id">{{ c.name }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Stream</label>
-            <select
-              v-model="f.stream_id"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <option value="">All</option>
-              <option v-for="s in filteredStreams" :key="s.id" :value="s.id">{{ s.name }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Status</label>
-            <select
-              v-model="f.status"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <option value="">All</option>
-              <option value="present">Present</option>
-              <option value="absent">Absent</option>
-              <option value="late">Late</option>
-              <option value="excused">Excused</option>
-            </select>
-          </div>
-          <div class="flex items-end">
-            <Button @click="apply">Apply</Button>
-          </div>
-        </div>
+          </Field>
+
+          <Field>
+            <FieldLabel>Class</FieldLabel>
+            <Select v-model="f.class_id">
+              <SelectTrigger>
+                <SelectValue placeholder="All classes" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem :value="null">All</SelectItem>
+                <SelectItem v-for="c in classes" :key="c.id" :value="c.id">
+                    {{ c.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field>
+            <FieldLabel>Stream</FieldLabel>
+            <Select v-model="f.stream_id">
+              <SelectTrigger>
+                <SelectValue placeholder="All streams" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem :value="null">All</SelectItem>
+                <SelectItem v-for="s in filteredStreams" :key="s.id" :value="s.id">
+                    {{ s.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field>
+            <FieldLabel>Status</FieldLabel>
+            <Select v-model="f.status">
+              <SelectTrigger>
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem :value="null">All</SelectItem>
+                <SelectItem value="present">Present</SelectItem>
+                <SelectItem value="absent">Absent</SelectItem>
+                <SelectItem value="late">Late</SelectItem>
+                <SelectItem value="excused">Excused</SelectItem>
+                </SelectContent>
+            </Select>
+          </Field>
+        </FieldGroup>
       </div>
 
       <div class="flex flex-wrap items-center gap-4 text-sm">

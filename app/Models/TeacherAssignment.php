@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
+use App\Services\TimetableService;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Concerns\TenantScoped as TenantScope;
-use App\Services\TimetableService;
-use App\Models\AcademicYear;
 
 class TeacherAssignment extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'class_stream_assignment_id',
         'subject_id',
-        'school_id',
-        'academic_year_id',
         'schedule_data',
     ];
 
@@ -25,25 +25,19 @@ class TeacherAssignment extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope(new TenantScope);
-
-        static::creating(function (self $model) {
-            if (empty($model->school_id) && app()->bound('currentSchool')) {
-                $model->school_id = app('currentSchool')->id;
+        // Scope by current school through the classroom (ClassStreamAssignment) relationship
+        static::addGlobalScope('tenant_teacher_assignment', function (Builder $builder) {
+            if (! app()->bound('currentSchool')) {
+                return;
             }
 
-            // Default academic year to school's current year if provided
-            if (empty($model->academic_year_id) && app()->bound('currentSchool')) {
-                $currentYearId = AcademicYear::where('school_id', app('currentSchool')->id)
-                    ->where('is_current', true)
-                    ->value('id');
-                if ($currentYearId) {
-                    $model->academic_year_id = $currentYearId;
-                }
-            }
+            $schoolId = app('currentSchool')->id;
+            $builder->whereHas('classroom', function ($q) use ($schoolId) {
+                $q->where('school_id', $schoolId);
+            });
         });
-        
-        static::saving(function(self $model) {
+
+        static::saving(function (self $model) {
             return $model->validateSchedule();
         });
     }
@@ -53,16 +47,16 @@ class TeacherAssignment extends Model
      */
     private function validateSchedule(): bool
     {
-        if (!$this->schedule_data || empty($this->schedule_data)) {
+        if (! $this->schedule_data || empty($this->schedule_data)) {
             return true; // No schedule data to validate
         }
 
         $timetableService = app(TimetableService::class);
-        
+
         $teacher = $this->teacher;
         $assignment = $this->classroom;
-        
-        if (!$teacher || !$assignment) {
+
+        if (! $teacher || ! $assignment) {
             return true; // Can't validate without teacher or assignment
         }
 
@@ -74,8 +68,8 @@ class TeacherAssignment extends Model
         );
 
         // If there are clashes, prevent saving
-        if (!empty($clashes['teacher_clashes']) || !empty($clashes['class_clashes'])) {
-            throw new \Exception("Schedule conflict detected: This assignment conflicts with existing schedules.");
+        if (! empty($clashes['teacher_clashes']) || ! empty($clashes['class_clashes'])) {
+            throw new \Exception('Schedule conflict detected: This assignment conflicts with existing schedules.');
         }
 
         return true;

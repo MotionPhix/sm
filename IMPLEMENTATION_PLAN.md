@@ -5,6 +5,7 @@ This document tracks the scope, progress, and remaining work. Use the checkboxes
 Legend: [ ] not started, [~] in progress, [x] done
 
 ## 1) Tenancy and Context
+
 - [~] Data scoping
   - [~] Enforce `school_id` and `academic_year_id` on tenant models (DB constraints + indexes)
   - [ ] Global scopes/services to guarantee tenant isolation on reads/writes
@@ -21,6 +22,7 @@ Legend: [ ] not started, [~] in progress, [x] done
   - [ ] Who/when/what diffs + export
 
 ## 2) Onboarding and Setup
+
 - [~] Wizard steps
   - [~] School profile (type, EMIS code, contacts) (models/migrations in place; UI flow to confirm)
   - [~] Academic calendar (years) (AcademicYear model/service; term dates pending)
@@ -34,11 +36,13 @@ Legend: [ ] not started, [~] in progress, [x] done
   - [ ] Progress indicators & defaults
 
 ## 3) Academic Year, Terms, Calendar
+
 - [~] Academic year lifecycle (create/lock/rollover) (service present; needs completion)
 - [ ] Term definitions (3-term default, custom allowed)
 - [ ] School/class events & calendar; iCal export
 
 ## 4) Timetabling and Attendance
+
 - [x] Timetable builder (foundational models)
   - [x] Subject-teacher-stream assignments (TeacherAssignment, ClassStreamAssignment models)
   - [x] Clash detection (teacher/class/time) — TimetableService with validateAssignmentClash, isTeacherAvailable, isClassAvailable
@@ -54,6 +58,7 @@ Legend: [ ] not started, [~] in progress, [x] done
   - [ ] Alerts for chronic absenteeism
 
 ## 5) Curriculum, Assessments, Grading, Reports
+
 - [~] Curriculum
   - [~] Subjects per level; Malawi syllabus alignment (Subjects, SchoolClass, Streams exist; alignment pending)
   - [ ] Assessment plans/weights per term
@@ -68,6 +73,7 @@ Legend: [ ] not started, [~] in progress, [x] done
   - [ ] Performance dashboards (subject/class/teacher)
 
 ## 6) Admissions & Student Lifecycle
+
 - [~] Admissions
   - [~] Application windows & online forms (AdmissionCycle, Applicants; Registrar UI present)
   - [~] Document uploads; screening pipeline (basic status updates present; uploads to confirm)
@@ -79,12 +85,14 @@ Legend: [ ] not started, [~] in progress, [x] done
   - [~] Bio, guardians, medical, IEPs, discipline, co-curricular (Student, Guardian, pivot exist; rest pending)
 
 ## 7) Staff Management
+
 - [~] Profiles & qualifications (User model; details pending)
 - [~] Contracts & workload (structure pending; assignments exist)
 - [~] Assignments (subjects/streams) with load balancing (assignments exist; balancing pending)
 - [ ] Appraisals & development tracking
 
 ## 8) Finance & Accounting
+
 - [ ] Fee structures
   - [ ] Fee items by class/term; bursaries/discounts
   - [ ] Invoicing; proration for joiners/leavers
@@ -100,6 +108,7 @@ Legend: [ ] not started, [~] in progress, [x] done
   - [ ] Reports: aged debtors, term collection, income vs budget
 
 ## 9) Communications & Portals
+
 - [~] Messaging
   - [~] Email templates & delivery (invitation mail implemented)
   - [ ] SMS/in-app templates & delivery status
@@ -110,36 +119,42 @@ Legend: [ ] not started, [~] in progress, [x] done
 - [ ] Noticeboard with acknowledgements
 
 ## 10) Compliance & Localization
+
 - [ ] Localization: English/Chichewa; currency MK; date/phone formats
 - [ ] Malawi policies: term structures, exam conventions
 - [ ] Government reporting/EMIS exports
 - [ ] Privacy & data lifecycle (export/delete per tenant)
 
 ## 11) Security & Reliability
+
 - [~] MFA (Fortify), session/device management (Fortify + 2FA columns present)
 - [~] RBAC enforcement tests; secure webhooks (role/permission middleware present; tests pending)
 - [ ] Backups; tenant-level export; disaster recovery
 - [ ] Rate limiting; CSRF protections; content security headers
 
 ## 12) Performance & Scale
+
 - [~] Queues for heavy jobs; job monitoring & DLQs (jobs/failed_jobs tables present)
 - [ ] Caching strategy (permissions, dashboards, timetables)
 - [ ] DB optimization: indexes, constraints, N+1 prevention, pagination
 - [ ] S3-compatible storage; signed URLs
 
 ## 13) Integrations & Extensibility
+
 - [ ] Payment gateways (local providers/aggregators)
 - [ ] SMS providers with Malawi delivery
 - [ ] Document e-sign (reports/certificates)
 - [ ] Public API/Webhooks; API keys per school
 
 ## 14) Quality & Testing
+
 - [x] Seeders/factories for realistic demos (Role/Permission seeders + School, AcademicYear, Term, SchoolClass, Stream, ClassStreamAssignment, Student, StudentEnrollment, TeacherAssignment, AttendanceRecord factories)
 - [x] Unit/integration tests (TimetableService clash detection tests, AttendanceController feature tests)
 - [ ] E2E flows per role (registrar/teacher/bursar/admin/parent/student)
 - [ ] CI with static analysis, coverage, coding standards
 
 ## 15) UX & Accessibility
+
 - [~] Design system consistency; dark/light modes (HandleAppearance middleware; component library present)
 - [ ] Mobile-first layouts (attendance, portals)
 - [ ] Accessibility (keyboard, ARIA, contrast)
@@ -148,36 +163,47 @@ Legend: [ ] not started, [~] in progress, [x] done
 ---
 
 ## Milestones/Epics
+
 1. Foundation & Tenancy Hardening
+
 - [~] Enforce scoping & middleware; audit logs; baseline tests
 
-2. Onboarding Wizard & School Switcher
+1. Onboarding Wizard & School Switcher
+
 - [~] Full setup flow; gating; defaults (onboarding middleware present; flows partially implemented)
 
-3. Academic Year/Terms/Calendar + Timetable & Attendance
+1. Academic Year/Terms/Calendar + Timetable & Attendance
+
 - [x] Year/term lifecycle; timetable; attendance MVP (clash detection, daily attendance with validation, TypeScript UI)
 
-4. Gradebook, Grading Scales, Reports (PDF)
+1. Gradebook, Grading Scales, Reports (PDF)
+
 - [ ] Assessments, computation, PDFs
 
-5. Admissions & Student Lifecycle
+1. Admissions & Student Lifecycle
+
 - [~] Applications→enrollment; transfers; student profiles (admissions UI + models; enrollment linkage pending)
 
-6. Finance & Accounting + Payments
+1. Finance & Accounting + Payments
+
 - [ ] Fees/invoices/receipts; arrears; integrations; GL
 
-7. Communications & Portals
+1. Communications & Portals
+
 - [~] Messaging; noticeboard; parent/student portals (invitation email; portal routes scaffolded)
 
-8. Analytics & Compliance Exports
+1. Analytics & Compliance Exports
+
 - [ ] Dashboards; EMIS/government exports
 
-9. Localization, Backups, Observability
+1. Localization, Backups, Observability
+
 - [ ] Chichewa/MK; backups; logging & error tracking
 
 ---
 
 ## Risks & Edge Cases
+
 - [ ] Cross-tenant data leakage via caching/exports/logs
 - [ ] Mid-term enrollments with fee proration and partial assessments
 - [ ] Late grade edits after publication (lock & audit)
@@ -187,6 +213,7 @@ Legend: [ ] not started, [~] in progress, [x] done
 - [ ] SMS deliverability/latency and cost management
 
 ## KPIs
+
 - [ ] Time to onboard a new school (< 30 min)
 - [ ] Attendance capture time per class (< 2 min)
 - [ ] Report card generation throughput (queued PDFs/min)
@@ -194,6 +221,7 @@ Legend: [ ] not started, [~] in progress, [x] done
 - [ ] System error rate (< 0.1%) & P95 page load time
 
 ## Notes
+
 - Use queues for heavy tasks (PDFs, imports, notifications)
 - Tag logs with `school_id`, `user_id`, `academic_year_id`
 - Prefer repository/service patterns for scoping and testability

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
-import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     SidebarGroup,
     SidebarGroupContent,
@@ -10,25 +10,43 @@ import {
 } from '@/components/ui/sidebar';
 import { Settings, CreditCard } from 'lucide-vue-next';
 import { index as academicYearsIndex } from '@/routes/admin/settings/academic-year';
-import { index as termsIndex } from '@/routes/admin/settings/terms';
+import { index as billingIndex } from '@/routes/admin/billing';
 
 const page = usePage();
 
-// Define footer navigation items with routes
-const footerItems = [
-    {
-        title: 'Settings',
-        href: academicYearsIndex().url,
-        icon: Settings,
-        isActive: () => page.url.startsWith('/admin/settings'),
-    },
-    {
-        title: 'Billing',
-        href: termsIndex().url,
-        icon: CreditCard,
-        isActive: () => page.url.startsWith('/admin/billing'),
-    },
-];
+const role = computed(() => page.props.auth?.user?.role as string | undefined);
+
+const adminRoles = ['admin', 'super_admin'];
+const financeRoles = ['admin', 'super_admin', 'bursar', 'accountant'];
+
+const footerItems = computed(() => {
+    const items: {
+        title: string;
+        href: string;
+        icon: typeof Settings;
+        isActive: () => boolean;
+    }[] = [];
+
+    if (adminRoles.includes(role.value ?? '')) {
+        items.push({
+            title: 'Settings',
+            href: academicYearsIndex().url,
+            icon: Settings,
+            isActive: () => page.url.startsWith('/admin/settings'),
+        });
+    }
+
+    if (financeRoles.includes(role.value ?? '')) {
+        items.push({
+            title: 'Billing',
+            href: billingIndex().url,
+            icon: CreditCard,
+            isActive: () => page.url.startsWith('/admin/billing'),
+        });
+    }
+
+    return items;
+});
 
 interface Props {
     class?: string;
@@ -39,6 +57,7 @@ defineProps<Props>();
 
 <template>
     <SidebarGroup
+        v-if="footerItems.length > 0"
         :class="`group-data-[collapsible=icon]:p-0 ${$props.class || ''}`"
     >
         <SidebarGroupContent>

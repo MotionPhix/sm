@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\AttendanceRecord;
-use App\Models\ClassStreamAssignment;
 use App\Models\SchoolClass;
 use App\Models\Stream;
 use App\Models\Student;
@@ -26,7 +25,7 @@ class AttendanceController extends Controller
      */
     public function index(Request $request): Response
     {
-        $school = $request->user()->activeSchool();
+        $school = $request->user()->activeSchool;
         $year = AcademicYear::query()
             ->where('school_id', $school->id)
             ->where('is_current', true)
@@ -66,7 +65,7 @@ class AttendanceController extends Controller
             'date' => ['required', 'date'],
         ]);
 
-        $school = $request->user()->activeSchool();
+        $school = $request->user()->activeSchool;
         $class = SchoolClass::where('school_id', $school->id)->findOrFail($request->class_id);
         $stream = $request->stream_id
             ? Stream::where('school_id', $school->id)->findOrFail($request->stream_id)
@@ -110,7 +109,7 @@ class AttendanceController extends Controller
             'date' => ['required', 'date'],
         ]);
 
-        $school = $request->user()->activeSchool();
+        $school = $request->user()->activeSchool;
         $class = SchoolClass::where('school_id', $school->id)->findOrFail($request->class_id);
         $stream = $request->stream_id
             ? Stream::where('school_id', $school->id)->findOrFail($request->stream_id)
@@ -163,7 +162,7 @@ class AttendanceController extends Controller
             'records.*.remarks' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $school = $request->user()->activeSchool();
+        $school = $request->user()->activeSchool;
         $year = AcademicYear::query()
             ->where('school_id', $school->id)
             ->where('is_current', true)
@@ -178,7 +177,7 @@ class AttendanceController extends Controller
         $this->authorizeTeacherForClass($request->user(), $class, $stream);
 
         // Validate date is within current academic year
-        if (!Carbon::parse($data['date'])->between($year->starts_at, $year->ends_at)) {
+        if (! Carbon::parse($data['date'])->between($year->starts_at, $year->ends_at)) {
             abort(400, 'Attendance cannot be recorded outside the current academic year.');
         }
 
@@ -217,7 +216,7 @@ class AttendanceController extends Controller
      */
     public function history(Request $request): Response
     {
-        $school = $request->user()->activeSchool();
+        $school = $request->user()->activeSchool;
         $year = AcademicYear::query()
             ->where('school_id', $school->id)
             ->where('is_current', true)
@@ -239,23 +238,23 @@ class AttendanceController extends Controller
             $query->where('academic_year_id', $year->id);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->whereDate('date', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->whereDate('date', '<=', $filters['date_to']);
         }
 
-        if (!empty($filters['class_id'])) {
+        if (! empty($filters['class_id'])) {
             $query->where('school_class_id', $filters['class_id']);
         }
 
-        if (!empty($filters['stream_id'])) {
+        if (! empty($filters['stream_id'])) {
             $query->where('stream_id', $filters['stream_id']);
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
@@ -295,7 +294,7 @@ class AttendanceController extends Controller
      */
     public function export(Request $request): StreamedResponse
     {
-        $school = $request->user()->activeSchool();
+        $school = $request->user()->activeSchool;
         $year = AcademicYear::query()
             ->where('school_id', $school->id)
             ->where('is_current', true)
@@ -317,27 +316,27 @@ class AttendanceController extends Controller
             $query->where('academic_year_id', $year->id);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->whereDate('date', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->whereDate('date', '<=', $filters['date_to']);
         }
 
-        if (!empty($filters['class_id'])) {
+        if (! empty($filters['class_id'])) {
             $query->where('school_class_id', $filters['class_id']);
         }
 
-        if (!empty($filters['stream_id'])) {
+        if (! empty($filters['stream_id'])) {
             $query->where('stream_id', $filters['stream_id']);
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        $filename = 'attendance_export_' . now()->format('Ymd_His') . '.csv';
+        $filename = 'attendance_export_'.now()->format('Ymd_His').'.csv';
 
         return response()->streamDownload(function () use ($query) {
             $output = fopen('php://output', 'w');
@@ -361,7 +360,7 @@ class AttendanceController extends Controller
                         $row->stream?->name ?? 'N/A',
                         $row->student?->admission_number ?? 'N/A',
                         $row->student
-                            ? $row->student->last_name . ', ' . $row->student->first_name
+                            ? $row->student->last_name.', '.$row->student->first_name
                             : 'N/A',
                         $row->status,
                         $row->remarks,
@@ -389,7 +388,7 @@ class AttendanceController extends Controller
             })
             ->exists();
 
-        if (!$assignmentExists) {
+        if (! $assignmentExists) {
             abort(403, 'You are not authorized to take attendance for this class.');
         }
     }
@@ -403,11 +402,11 @@ class AttendanceController extends Controller
             ->where('is_current', true)
             ->first();
 
-        if (!$currentYear) {
+        if (! $currentYear) {
             abort(400, 'No active academic year found. Please contact your administrator.');
         }
 
-        if (!Carbon::parse($date)->between($currentYear->starts_at, $currentYear->ends_at)) {
+        if (! Carbon::parse($date)->between($currentYear->starts_at, $currentYear->ends_at)) {
             abort(400, 'Attendance cannot be recorded outside the current academic year dates.');
         }
 
@@ -427,7 +426,7 @@ class AttendanceController extends Controller
             ->whereDate('ends_on', '>=', $dateCarbon)
             ->first();
 
-        if (!$currentTerm) {
+        if (! $currentTerm) {
             abort(400, 'Attendance cannot be recorded outside an active term period.');
         }
 

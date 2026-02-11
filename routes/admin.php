@@ -3,10 +3,14 @@
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdmissionCycleController;
 use App\Http\Controllers\Admin\AssessmentPlanController;
+use App\Http\Controllers\Admin\BillingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\FeeItemController;
 use App\Http\Controllers\Admin\FeeStructureController;
 use App\Http\Controllers\Admin\GradeScaleController;
+use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SchoolProfileController;
 use App\Http\Controllers\Admin\StreamController;
@@ -35,6 +39,22 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
             '/staff/invite',
             [\App\Http\Controllers\Admin\SchoolInvitationController::class, 'store']
         )->name('staff.store');
+
+        // Enrollment overview
+        Route::get('/enrollment', [EnrollmentController::class, 'index'])
+            ->name('enrollment.index');
+
+        // Promotion management
+        Route::get('/promotion', [PromotionController::class, 'index'])
+            ->name('promotion.index');
+
+        // Reports overview
+        Route::get('/reports', [ReportController::class, 'index'])
+            ->name('reports.index');
+
+        // Billing / SaaS subscription
+        Route::get('/billing', [BillingController::class, 'index'])
+            ->name('billing.index');
 
         Route::prefix('settings')
             ->name('settings.')

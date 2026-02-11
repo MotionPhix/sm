@@ -83,8 +83,6 @@ beforeEach(function () {
     TeacherAssignment::factory()->create([
         'user_id' => $this->teacher->id,
         'class_stream_assignment_id' => $this->classroom->id,
-        'school_id' => $this->school->id,
-        'academic_year_id' => $this->academicYear->id,
     ]);
 
     // Create students

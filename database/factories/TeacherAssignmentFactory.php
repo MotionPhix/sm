@@ -26,8 +26,6 @@ class TeacherAssignmentFactory extends Factory
             'user_id' => User::factory(),
             'class_stream_assignment_id' => ClassStreamAssignment::factory()->forAcademicYear($year),
             'subject_id' => Subject::factory()->forSchool($school),
-            'school_id' => $school->id,
-            'academic_year_id' => $year->id,
             'schedule_data' => null,
         ];
     }
@@ -43,8 +41,6 @@ class TeacherAssignmentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'class_stream_assignment_id' => $classroom->id,
-            'school_id' => $classroom->school_id,
-            'academic_year_id' => $classroom->academic_year_id,
         ]);
     }
 

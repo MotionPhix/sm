@@ -18,9 +18,9 @@ class SchoolFactory extends Factory
     {
         return [
             'uuid' => Str::uuid()->toString(),
-            'name' => fake()->company() . ' School',
+            'name' => fake()->company().' School',
             'code' => strtoupper(fake()->unique()->lexify('??????')),
-            'type' => fake()->randomElement(['primary', 'secondary', 'cdss']),
+            'type' => fake()->randomElement(\App\Enums\SchoolType::cases())->value,
             'email' => fake()->unique()->companyEmail(),
             'phone' => fake()->phoneNumber(),
             'district' => fake()->city(),

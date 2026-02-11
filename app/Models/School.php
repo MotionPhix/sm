@@ -19,6 +19,7 @@ class School extends Model
         'type', // primary, secondary, private, etc
         'district',
         'country', // Malawi, Zambia, Tanzania, etc
+        'logo_path',
     ];
 
     public function users()

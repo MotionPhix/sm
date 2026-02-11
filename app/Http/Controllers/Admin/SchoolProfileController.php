@@ -6,6 +6,7 @@ use App\Enums\SchoolType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateSchoolProfileRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SchoolProfileController extends Controller
@@ -19,11 +20,14 @@ class SchoolProfileController extends Controller
 
         $schoolTypeLabel = null;
         if ($school->type) {
-            $schoolTypeLabel = SchoolType::from($school->type)->label();
+            $schoolTypeLabel = SchoolType::tryFrom($school->type)?->label();
         }
 
         return Inertia::render('admin/settings/school-profile/Show', [
-            'school' => $school,
+            'school' => [
+                ...$school->toArray(),
+                'logo_url' => $school->logo_path ? Storage::url($school->logo_path) : null,
+            ],
             'schoolTypeLabel' => $schoolTypeLabel,
         ]);
     }
@@ -36,7 +40,10 @@ class SchoolProfileController extends Controller
         $school = $request->user()->activeSchool;
 
         return Inertia::render('admin/settings/school-profile/Edit', [
-            'school' => $school,
+            'school' => [
+                ...$school->toArray(),
+                'logo_url' => $school->logo_path ? Storage::url($school->logo_path) : null,
+            ],
             'schoolTypes' => SchoolType::options(),
         ]);
     }
@@ -48,7 +55,7 @@ class SchoolProfileController extends Controller
     {
         $school = $request->user()->activeSchool;
 
-        $school->update([
+        $data = [
             'name' => $request->name,
             'code' => $request->code,
             'email' => $request->email,
@@ -56,7 +63,21 @@ class SchoolProfileController extends Controller
             'type' => $request->type,
             'district' => $request->district,
             'country' => $request->country,
-        ]);
+        ];
+
+        if ($request->hasFile('logo')) {
+            // Delete old logo if it exists
+            if ($school->logo_path) {
+                Storage::disk('public')->delete($school->logo_path);
+            }
+
+            $data['logo_path'] = $request->file('logo')->store(
+                "schools/{$school->id}/logos",
+                'public'
+            );
+        }
+
+        $school->update($data);
 
         return redirect()
             ->route('admin.settings.school-profile.show')

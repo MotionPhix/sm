@@ -53,6 +53,12 @@ class UpdateSchoolProfileRequest extends FormRequest
                 'string',
                 'max:100',
             ],
+            'logo' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,svg',
+                'max:2048',
+            ],
         ];
     }
 

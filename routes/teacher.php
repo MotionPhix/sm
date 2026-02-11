@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\Teacher\AnnouncementController;
+use App\Http\Controllers\Teacher\AttendanceController;
+use App\Http\Controllers\Teacher\ClassReportController;
+use App\Http\Controllers\Teacher\ExamMarkingController;
+use App\Http\Controllers\Teacher\GradebookController;
+use App\Http\Controllers\Teacher\StudentController;
+use App\Http\Controllers\Teacher\TimetableController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\Teacher\AttendanceController;
-use App\Http\Controllers\Teacher\GradebookController;
-use App\Http\Controllers\Teacher\TimetableController;
 
 Route::middleware(['auth', 'verified', 'school.context', 'role:teacher,head_teacher', 'academic'])
     ->prefix('teacher')
@@ -34,7 +38,7 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:teacher,head_teac
             Route::get('/timetable', [TimetableController::class, 'index'])->name('timetable.index');
             Route::get('/timetable/my', [TimetableController::class, 'showMyTimetable'])->name('timetable.my');
         });
-        
+
         Route::middleware('permission:timetable.manage')->group(function () {
             Route::post('/timetable/check-conflicts', [TimetableController::class, 'getConflicts'])->name('timetable.check-conflicts');
         });
@@ -48,5 +52,23 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:teacher,head_teac
         Route::middleware('permission:exams.enter-marks')->group(function () {
             Route::post('/gradebook', [GradebookController::class, 'store'])->name('gradebook.store');
         });
+
+        // My Students
+        Route::middleware('permission:students.view')->group(function () {
+            Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+        });
+
+        // Exam Marking
+        Route::middleware('permission:exams.enter-marks')->group(function () {
+            Route::get('/exam-marking', [ExamMarkingController::class, 'index'])->name('exam-marking.index');
+        });
+
+        // Class Reports
+        Route::middleware('permission:students.view')->group(function () {
+            Route::get('/class-reports', [ClassReportController::class, 'index'])->name('class-reports.index');
+        });
+
+        // Announcements
+        Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
 
     });

@@ -10,10 +10,10 @@ import {
     SidebarSeparator,
 } from '@/components/ui/sidebar';
 
-import { usePage } from '@inertiajs/vue3'
-import { navigation } from '@/navigation'
-import SchoolSwitcher from '@/components/SchoolSwitcher.vue'
-import { computed } from 'vue'
+import SchoolSwitcher from '@/components/SchoolSwitcher.vue';
+import { navigation } from '@/navigation';
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const page = usePage()
 
@@ -37,6 +37,9 @@ const mainNavItems = computed(() => {
 
         <SidebarFooter>
             <NavFooter />
+
+            <SidebarSeparator />
+
             <NavUser />
         </SidebarFooter>
     </Sidebar>

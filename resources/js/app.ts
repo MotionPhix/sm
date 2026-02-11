@@ -1,12 +1,13 @@
+import 'filepond/dist/filepond.min.css';
+import 'vue-sonner/style.css';
 import '../css/app.css';
-import 'vue-sonner/style.css'
 
+import { initializeTheme } from '@/composables/useAppearance';
 import { createInertiaApp } from '@inertiajs/vue3';
+import { putConfig, renderApp } from '@inertiaui/modal-vue';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp } from 'vue';
-import { renderApp, putConfig } from '@inertiaui/modal-vue'
-import { initializeTheme } from '@/composables/useAppearance';
 
 import { useMobileCheck } from '@/composables/useMobileCheck';
 

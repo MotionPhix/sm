@@ -15,9 +15,9 @@ class InvitationAcceptanceController extends Controller
     public function show(string $token)
     {
         $invitation = SchoolInvitation::where('token', $token)
-        ->with(['school', 'role'])
-        ->whereNull('accepted_at')
-        ->firstOrFail();
+            ->with(['school', 'role'])
+            ->whereNull('accepted_at')
+            ->firstOrFail();
 
         abort_if($invitation->isExpired(), 410);
 
@@ -34,8 +34,8 @@ class InvitationAcceptanceController extends Controller
     public function store(Request $request, string $token)
     {
         $invitation = SchoolInvitation::where('token', $token)
-        ->whereNull('accepted_at')
-        ->firstOrFail();
+            ->whereNull('accepted_at')
+            ->firstOrFail();
 
         abort_if($invitation->isExpired(), 410);
 
@@ -51,7 +51,13 @@ class InvitationAcceptanceController extends Controller
                 'name' => $data['name'],
                 'email' => $invitation->email,
                 'password' => Hash::make($data['password']),
+                'email_verified_at' => now(),
             ]);
+        }
+
+        // Accepting an invitation proves email ownership — mark as verified
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
         }
 
         // Attach user to school

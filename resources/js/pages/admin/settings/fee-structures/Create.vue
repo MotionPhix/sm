@@ -7,7 +7,8 @@ import {
     ModalScrollable,
 } from '@/components/modal'
 import { Button } from '@/components/ui/button'
-import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldSet, FieldTitle } from '@/components/ui/field'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet, FieldTitle } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
@@ -166,9 +167,9 @@ const areSelectedClassesValid = computed(() => {
         <Head title="Assign Fees to Classes" />
 
         <ModalRoot>
-            <ModalHeader 
+            <ModalHeader
                 title="Assign Fees to Classes"
-                description="Select how to group classes and assign fees" 
+                description="Select how to group classes and assign fees"
             />
 
             <ModalScrollable>
@@ -187,15 +188,19 @@ const areSelectedClassesValid = computed(() => {
                                 Choose whether to set fees per individual class or use predefined groupings
                             </FieldDescription>
 
-                            <RadioGroup defaultvalue="individual">
+                            <RadioGroup
+                                v-model="groupingStrategy"
+                                defaultvalue="individual">
                                 <FieldLabel for="strategy_individual">
                                     <Field orientation="horizontal">
-                                        <RadioGroupItem 
+                                        <RadioGroupItem
                                             id="strategy_individual"
                                             value="individual"
+                                            class="size-5"
                                             @click="updateGroupingStrategy('individual')"
-                                            :checked="groupingStrategy === 'individual'"
-                                        />
+                                            :data-state="groupingStrategy === 'individual' ? 'checked' : 'unchecked'"
+
+                                          />
 
                                         <FieldContent>
                                             <FieldTitle>
@@ -211,11 +216,11 @@ const areSelectedClassesValid = computed(() => {
 
                                 <FieldLabel for="strategy_groups">
                                     <Field orientation="horizontal">
-                                        <RadioGroupItem 
+                                        <RadioGroupItem
                                             id="strategy_groups"
                                             value="primary-secondary"
+                                            class="size-5"
                                             @click="updateGroupingStrategy('primary-secondary')"
-                                            :checked="groupingStrategy === 'primary-secondary'"
                                         />
 
                                         <FieldContent>
@@ -237,70 +242,85 @@ const areSelectedClassesValid = computed(() => {
 
                     <!-- Class Selection -->
                     <FieldGroup>
-                        <FieldLabel>Select classes *</FieldLabel>
+                        <FieldLegend>Select classes *</FieldLegend>
 
                         <!-- Individual Class Selection -->
-                        <div v-if="groupingStrategy === 'individual'" class="space-y-2">
-                            <div class="grid grid-cols-2 gap-3">
-                                <label v-for="klass in classes" :key="klass.id"
-                                    class="flex items-center gap-2 p-3 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
-                                    :class="form.school_class_ids.includes(String(klass.id)) ? 'border-primary bg-primary/5' : ''">
-                                    <input
-                                        type="checkbox"
-                                        :checked="form.school_class_ids.includes(String(klass.id))"
-                                        @change="toggleClass(String(klass.id))"
-                                        class="rounded" />
-                                    <span class="text-sm font-medium">{{ klass.name }}</span>
-                                </label>
-                            </div>
-                            <InputError v-if="errors['school_class_ids']" :message="errors['school_class_ids']" />
-                        </div>
+                        <Field v-if="groupingStrategy === 'individual'">
+                            <FieldGroup class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <Field orientation="horizontal" v-for="klass in classes" :key="klass.id">
+                                    <Checkbox
+                                        :id="`finder-pref-${klass.id}`"
+                                        :model-value="form.school_class_ids.includes(String(klass.id))"
+                                        @update:model-value="toggleClass(String(klass.id))"
+                                    />
+
+                                    <FieldLabel
+                                        :for="`finder-pref-${klass.id}`"
+                                        :default-value="true">
+                                       {{  klass.name }}
+                                    </FieldLabel>
+                                </Field>
+
+                                <InputError
+                                    v-if="errors['school_class_ids']"
+                                    :message="errors['school_class_ids']"
+                                />
+                            </FieldGroup>
+                        </Field>
 
                         <!-- Primary & Secondary Group Selection -->
-                        <div v-else-if="groupingStrategy === 'primary-secondary'" class="space-y-4">
+                        <Field v-else-if="groupingStrategy === 'primary-secondary'">
                             <!-- Primary Classes -->
-                            <div>
-                                <h4 class="text-sm font-semibold mb-2 text-muted-foreground">Primary Classes</h4>
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-3 p-3 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
-                                        :class="form.school_class_ids.includes('primary') ? 'border-primary bg-primary/5' : ''">
-                                        <input
-                                            type="checkbox"
-                                            :checked="form.school_class_ids.includes('primary')"
-                                            @change="toggleGroup('primary')"
-                                            class="rounded" />
-                                        <div class="flex-1">
-                                            <span class="text-sm font-medium">Apply to all Primary Classes</span>
-                                            <p class="text-xs text-muted-foreground">
+                            <div v-if="primaryClasses.length > 0">
+                                <FieldLabel class="text-sm font-semibold mb-2 text-muted-foreground">
+                                    Primary Classes
+                                </FieldLabel>
+
+                                <FieldLabel>
+                                    <Field
+                                        orientation="horizontal">
+                                        <FieldContent>
+                                            <FieldTitle>Apply to all primary classes</FieldTitle>
+                                            <FieldDescription>
                                                 {{ primaryClasses.map(c => c.name).join(', ') }}
-                                            </p>
-                                        </div>
-                                    </label>
-                                </div>
+                                            </FieldDescription>
+                                        </FieldContent>
+
+                                        <Checkbox
+                                            class="size-5"
+                                            :model-value="form.school_class_ids.includes('primary')"
+                                            @update:model-value="toggleGroup('primary')"
+                                        />
+                                    </Field>
+                                </FieldLabel>
                             </div>
 
                             <!-- Secondary Classes -->
                             <div v-if="secondaryClasses.length > 0">
-                                <h4 class="text-sm font-semibold mb-2 text-muted-foreground">Secondary Classes</h4>
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-3 p-3 rounded-lg border border-muted hover:border-primary/50 cursor-pointer"
-                                        :class="form.school_class_ids.includes('secondary') ? 'border-primary bg-primary/5' : ''">
-                                        <input
-                                            type="checkbox"
-                                            :checked="form.school_class_ids.includes('secondary')"
-                                            @change="toggleGroup('secondary')"
-                                            class="rounded" />
-                                        <div class="flex-1">
-                                            <span class="text-sm font-medium">Apply to all Secondary Classes</span>
-                                            <p class="text-xs text-muted-foreground">
+                                <FieldLabel class="text-sm font-semibold mb-2 text-muted-foreground">
+                                    Secondary Classes
+                                </FieldLabel>
+
+                                <FieldLabel>
+                                    <Field
+                                        orientation="horizontal">
+                                        <FieldContent>
+                                            <FieldTitle>Apply to all secondary classes</FieldTitle>
+                                            <FieldDescription>
                                                 {{ secondaryClasses.map(c => c.name).join(', ') }}
-                                            </p>
-                                        </div>
-                                    </label>
-                                </div>
+                                            </FieldDescription>
+                                        </FieldContent>
+
+                                        <Checkbox
+                                            class="size-5"
+                                            :model-value="form.school_class_ids.includes('secondary')"
+                                            @update:model-value="toggleGroup('secondary')"
+                                        />
+                                    </Field>
+                                </FieldLabel>
                             </div>
                             <InputError v-if="errors['school_class_ids']" :message="errors['school_class_ids']" />
-                        </div>
+                        </Field>
                     </FieldGroup>
 
                     <!-- Term Selection -->
@@ -308,7 +328,7 @@ const areSelectedClassesValid = computed(() => {
                         <Field :data-invalid="errors['term_id']">
                             <FieldLabel for="create-term">Term (Optional)</FieldLabel>
                             <Select v-model="form.term_id">
-                                <SelectTrigger id="create-term" class="bg-background">
+                                <SelectTrigger id="create-term">
                                     <SelectValue placeholder="All year (leave empty)" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -418,7 +438,7 @@ const areSelectedClassesValid = computed(() => {
                                         :id="`notes-${index}`"
                                         v-model="item.notes"
                                         placeholder="Optional notes"
-                                        class="bg-background"
+
                                         rows="2" />
                                 </Field>
                             </div>

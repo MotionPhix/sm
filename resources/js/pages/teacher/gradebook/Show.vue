@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, Link } from '@inertiajs/vue3'
+import { Form, Head, Link, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { ArrowLeft, Save, Check, AlertCircle, BarChart3 } from 'lucide-vue-next'
 import { index as gradebookIndex, store as gradebookStore, summary as gradebookSummary } from '@/routes/teacher/gradebook'
-import { ref, computed, usePage } from 'vue'
+import { ref, computed } from 'vue'
 import { Spinner } from '@/components/ui/spinner'
 
 interface SchoolClass {

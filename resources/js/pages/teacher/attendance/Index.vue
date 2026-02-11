@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { Head, router, Link } from '@inertiajs/vue3'
-import { ref, onMounted, computed } from 'vue'
-import { Button } from '@/components/ui/button'
-import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
+import { Button } from '@/components/ui/button'
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Spinner } from '@/components/ui/spinner'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import AppLayout from '@/layouts/AppLayout.vue'
 import type { BreadcrumbItemType } from '@/types'
+import { Head, Link, router } from '@inertiajs/vue3'
+import { Loader } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
 
 const props = defineProps<{
   date: string
@@ -60,54 +67,78 @@ onMounted(fetchRoster)
   <AppLayout :breadcrumbs="breadcrumbs">
     <Head title="Attendance" />
 
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <Heading
-          title="Attendance"
-          description="Select a class, stream and date to record daily attendance."
-        />
-        <Link href="/teacher/attendance/history">
-          <Button variant="outline">View History</Button>
+    <template #act>
+        <Link
+            href="/teacher/attendance/history"
+            :as="Button" variant="outline">
+            History
         </Link>
-      </div>
 
-      <div class="rounded-lg border bg-card p-6">
+        <Button
+          :disabled="loading || !selectedClassId || roster.length === 0"
+          @click="router.visit('/teacher/attendance/record', { method: 'get', data: { date: selectedDate, class_id: selectedClassId, stream_id: selectedStreamId } })"
+        >
+          Record
+        </Button>
+    </template>
+
+    <div class="space-y-6">
+        <Heading
+            title="Attendance"
+            description="Select a class, stream and date to record daily attendance."
+        />
+
+      <div class="p-6">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
-          <div>
-            <label class="mb-1 block text-sm font-medium">Date</label>
-            <input
+          <Field>
+            <FieldLabel>Date</FieldLabel>
+            <Input
               v-model="selectedDate"
               type="date"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               @change="fetchRoster"
             />
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Class</label>
-            <select
+          </Field>
+
+          <Field>
+            <FieldLabel>Class</FieldLabel>
+            <Select
               v-model="selectedClassId"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              @change="fetchRoster"
-            >
-              <option value="">Select class</option>
-              <option v-for="c in classes" :key="c.id" :value="c.id">{{ c.name }}</option>
-            </select>
-          </div>
-          <div>
-            <label class="mb-1 block text-sm font-medium">Stream</label>
-            <select
+              @change="fetchRoster">
+              <SelectTrigger>
+                <SelectValue placeholder="Select class" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem v-for="c in classes" :key="c.id" :value="c.id">
+                    {{ c.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field>
+            <FieldLabel>Stream</FieldLabel>
+            <Select
               v-model="selectedStreamId"
-              class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              @change="fetchRoster"
-            >
-              <option value="">All/None</option>
-              <option v-for="s in classStreams" :key="s.id" :value="s.id">{{ s.name }}</option>
-            </select>
-          </div>
-          <div class="flex items-end">
-            <Button :disabled="loading" @click="fetchRoster">
-              <span v-if="loading">Loading...</span>
-              <span v-else>Load roster</span>
+              @change="fetchRoster">
+              <SelectTrigger>
+                <SelectValue placeholder="Select stream" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem
+                    v-for="s in classStreams"
+                    :key="s.id" :value="s.id">
+                    {{ s.name }}
+                </SelectItem>
+            </SelectContent>
+            </Select>
+          </Field>
+
+          <div class="flex items-end justify-end">
+            <Button size="icon-lg" :disabled="loading" @click="fetchRoster">
+              <Spinner v-if="loading" />
+              <Loader v-else />
             </Button>
           </div>
         </div>
@@ -119,18 +150,19 @@ onMounted(fetchRoster)
 
       <div class="rounded-lg border bg-card">
         <div class="overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead>
-              <tr class="border-b bg-muted/50">
-                <th class="px-4 py-3 text-left font-medium">Student</th>
-                <th class="px-4 py-3 text-left font-medium">Status</th>
-                <th class="px-4 py-3 text-left font-medium">Remarks</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="st in roster" :key="st.id" class="border-b last:border-0">
-                <td class="px-4 py-3">{{ st.last_name }}, {{ st.first_name }}</td>
-                <td class="px-4 py-3">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Student</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Remarks</TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              <TableRow v-for="st in roster" :key="st.id">
+                <TableCell>{{ st.last_name }}, {{ st.first_name }}</TableCell>
+                <TableCell>
                   <span
                     class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                     :class="{
@@ -142,27 +174,31 @@ onMounted(fetchRoster)
                     }"
                     v-text="existing[st.id]?.status || '—'"
                   />
-                </td>
-                <td class="px-4 py-3 text-muted-foreground">{{ existing[st.id]?.remarks || '' }}</td>
-              </tr>
-              <tr v-if="roster.length === 0">
-                <td colspan="3" class="px-4 py-12 text-center text-muted-foreground">
-                  <p class="text-sm">No students loaded</p>
-                  <p class="mt-1 text-xs">Select a class and date to view the roster</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </TableCell>
 
-      <div class="flex justify-end">
-        <Button
-          :disabled="loading || !selectedClassId || roster.length === 0"
-          @click="router.visit('/teacher/attendance/record', { method: 'get', data: { date: selectedDate, class_id: selectedClassId, stream_id: selectedStreamId } })"
-        >
-          Record attendance
-        </Button>
+                <TableCell>
+                    {{ existing[st.id]?.remarks || '' }}
+                </TableCell>
+              </TableRow>
+
+              <TableRow v-if="roster.length === 0">
+                <TableCell colspan="3" class="py-12">
+                    <Empty>
+                        <EmptyHeader>
+                            <EmptyTitle>
+                                No students loaded
+                            </EmptyTitle>
+
+                            <EmptyDescription>
+                                Select a class and date to view the roster
+                            </EmptyDescription>
+                        </EmptyHeader>
+                    </Empty>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   </AppLayout>

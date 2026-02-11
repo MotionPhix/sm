@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\TenantScoped as TenantScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Concerns\TenantScoped as TenantScope;
 
 class ClassStreamAssignment extends Model
 {
@@ -45,6 +45,14 @@ class ClassStreamAssignment extends Model
         return $this->belongsTo(SchoolClass::class, 'school_class_id');
     }
 
+    /**
+     * Alias for class() — avoids `class` being a reserved word in JS/JSON.
+     */
+    public function schoolClass(): BelongsTo
+    {
+        return $this->belongsTo(SchoolClass::class, 'school_class_id');
+    }
+
     public function stream(): BelongsTo
     {
         return $this->belongsTo(Stream::class);
@@ -73,7 +81,7 @@ class ClassStreamAssignment extends Model
         $name = $this->class?->name ?? 'Unknown Class';
 
         if ($this->stream) {
-            $name .= ' - ' . $this->stream->name;
+            $name .= ' - '.$this->stream->name;
         }
 
         return $name;

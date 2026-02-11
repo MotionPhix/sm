@@ -43,16 +43,16 @@ class DashboardController extends Controller
 
         $activeTerm = $activeAcademicYear
             ? Term::where('academic_year_id', $activeAcademicYear->id)
-                ->where('is_current', true)
+                ->where('is_active', true)
                 ->first()
             : null;
 
         // Calculate week of term (if active term exists)
         $weekOfTerm = null;
         $totalWeeks = null;
-        if ($activeTerm && $activeTerm->start_date) {
-            $startDate = $activeTerm->start_date;
-            $endDate = $activeTerm->end_date;
+        if ($activeTerm && $activeTerm->starts_on) {
+            $startDate = $activeTerm->starts_on;
+            $endDate = $activeTerm->ends_on;
             $now = now();
 
             if ($now->gte($startDate) && $now->lte($endDate)) {
@@ -91,7 +91,7 @@ class DashboardController extends Controller
 
         // Get open admission cycles
         $openAdmissionCycles = AdmissionCycle::where('school_id', $school->id)
-            ->where('status', 'open')
+            ->where('is_active', true)
             ->count();
 
         // Pending applicants count
