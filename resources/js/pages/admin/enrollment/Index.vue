@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
     Table,
     TableBody,
@@ -12,8 +10,10 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
+import AppLayout from '@/layouts/AppLayout.vue'
 import { dashboard as adminDashboard } from '@/routes/admin'
-import { Users, GraduationCap, UserCheck } from 'lucide-vue-next'
+import { Head } from '@inertiajs/vue3'
+import { GraduationCap, UserCheck, Users } from 'lucide-vue-next'
 
 interface ClassDistribution {
     name: string

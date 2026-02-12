@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import AppLayout from '@/layouts/AppLayout.vue'
 import { dashboard as adminDashboard } from '@/routes/admin'
-import { Users, DollarSign, ClipboardCheck, TrendingUp, TrendingDown, Percent } from 'lucide-vue-next'
+import { Head } from '@inertiajs/vue3'
+import { ClipboardCheck, DollarSign, Percent, TrendingDown, TrendingUp, Users } from 'lucide-vue-next'
 
 const props = defineProps<{
     stats: {

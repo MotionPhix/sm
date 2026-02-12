@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { Head, router, usePage } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
-import { Button } from '@/components/ui/button'
-import AppLayout from '@/layouts/AppLayout.vue'
-import AdminSettingsLayout from '@/layouts/AdminSettingsLayout.vue'
-import HeadingSmall from '@/components/HeadingSmall.vue'
-import { Plus, Trash2, Edit2, GraduationCap, Calendar, Check, Clock } from 'lucide-vue-next'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { ModalLink } from '@inertiaui/modal-vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import HeadingSmall from '@/components/HeadingSmall.vue'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useAdminSettingsNavigation } from '@/composables/useAdminSettingsNavigation'
 import { useConfirm } from '@/composables/useConfirm'
 import { useRoleRoutes } from '@/composables/useRoleRoutes'
-import { useAdminSettingsNavigation } from '@/composables/useAdminSettingsNavigation'
+import AdminSettingsLayout from '@/layouts/AdminSettingsLayout.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import { Head, router, usePage } from '@inertiajs/vue3'
+import { ModalLink } from '@inertiaui/modal-vue'
+import { Calendar, Check, Clock, Edit2, GraduationCap, Plus, Trash2 } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
 // Wayfinder routes - imported directly for type safety
-import { create as admissionCyclesCreate, edit as admissionCyclesEdit, destroy as admissionCyclesDestroy } from '@/routes/admin/settings/admission-cycles'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
+import { create as admissionCyclesCreate, destroy as admissionCyclesDestroy, edit as admissionCyclesEdit } from '@/routes/admin/settings/admission-cycles'
 
 interface AdmissionCycle {
     id: number
@@ -79,22 +81,22 @@ const isActive = (cycle: AdmissionCycle) => {
         <Head title="Admission Cycles" />
 
         <template #act>
-            <Button 
-                :as="ModalLink" 
+            <Button
+                :as="ModalLink"
                 :href="admissionCyclesCreate().url">
                 <Plus />
                 New Cycle
             </Button>
         </template>
 
-        <AdminSettingsLayout 
+        <AdminSettingsLayout
             title="School Settings"
-            description="Configure your school's academic calendar and other settings" 
+            description="Configure your school's academic calendar and other settings"
             :items="adminSettingsNavItems">
             <div class="space-y-6">
-                <HeadingSmall 
+                <HeadingSmall
                     title="Admission Cycles"
-                    description="Manage admission windows for different classes and intake periods" 
+                    description="Manage admission windows for different classes and intake periods"
                 />
 
                 <!-- Success Alert -->
@@ -116,41 +118,55 @@ const isActive = (cycle: AdmissionCycle) => {
                         </div>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr class="border-b bg-muted/50">
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Name
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Target
-                                        Class</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                        Duration</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Max
-                                        Intake</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status
-                                    </th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
-                                        Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y">
-                                <tr v-for="cycle in admissionCycles" :key="cycle.id" class="hover:bg-muted/30">
-                                    <td class="whitespace-nowrap px-6 py-4 font-medium">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>
+                                        Name
+                                    </TableHead>
+
+                                    <TableHead>
+                                        Target Class
+                                    </TableHead>
+
+                                    <TableHead>
+                                        Duration
+                                    </TableHead>
+
+                                    <TableHead>
+                                        Max Intake
+                                    </TableHead>
+
+                                    <TableHead>
+                                        Status
+                                    </TableHead>
+
+                                    <TableHead class="text-right" />
+                                </TableRow>
+                            </TableHeader>
+
+                            <TableBody>
+                                <TableRow v-for="cycle in admissionCycles" :key="cycle.id">
+                                    <TableCell>
                                         {{ cycle.name }}
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
+                                    </TableCell>
+
+                                    <TableCell>
                                         <Badge variant="outline">{{ cycle.target_class }}</Badge>
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-muted-foreground">
+                                    </TableCell>
+
+                                    <TableCell>
                                         <div class="flex items-center gap-1">
                                             <Calendar class="h-3.5 w-3.5" />
                                             {{ formatDate(cycle.starts_at) }} → {{ formatDate(cycle.ends_at) }}
                                         </div>
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm">
+                                    </TableCell>
+
+                                    <TableCell>
                                         {{ cycle.max_intake ? `${cycle.max_intake} students` : 'Unlimited' }}
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4">
+                                    </TableCell>
+
+                                    <TableCell>
                                         <div v-if="isActive(cycle)" class="flex items-center gap-2">
                                             <Clock class="h-4 w-4 text-amber-600" />
                                             <span
@@ -162,8 +178,9 @@ const isActive = (cycle: AdmissionCycle) => {
                                             class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
                                             Inactive
                                         </span>
-                                    </td>
-                                    <td class="whitespace-nowrap px-6 py-4 text-right">
+                                    </TableCell>
+
+                                    <TableCell class="text-right">
                                         <div class="flex justify-end gap-2">
                                             <Button variant="ghost" size="sm" :as="ModalLink"
                                                 :href="admissionCyclesEdit(cycle.id).url">
@@ -173,24 +190,37 @@ const isActive = (cycle: AdmissionCycle) => {
                                                 <Trash2 class="h-4 w-4 text-destructive" />
                                             </Button>
                                         </div>
-                                    </td>
-                                </tr>
-                                <tr v-if="admissionCycles.length === 0">
-                                    <td colspan="6" class="px-6 py-12 text-center">
-                                        <GraduationCap class="mx-auto h-12 w-12 text-muted-foreground" />
-                                        <h3 class="mt-4 text-sm font-medium">No admission cycles</h3>
-                                        <p class="mt-2 text-sm text-muted-foreground">
-                                            Create an admission cycle to start accepting applications for a specific
-                                            class.
-                                        </p>
-                                        <Button class="mt-4" :as="ModalLink" :href="admissionCyclesCreate().url">
-                                            <Plus class="mr-2 h-4 w-4" />
-                                            Create First Cycle
-                                        </Button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </TableCell>
+                                </TableRow>
+
+                                <TableRow v-if="admissionCycles.length === 0">
+                                    <TableCell colspan="6" class="py-12">
+                                        <Empty>
+                                            <EmptyHeader>
+                                                <EmptyMedia>
+                                                    <GraduationCap class="h-12 w-12 text-muted-foreground" />
+                                                </EmptyMedia>
+
+                                                <EmptyTitle>
+                                                    No Admission Cycles
+                                                </EmptyTitle>
+
+                                                <EmptyDescription>
+                                                    Create an admission cycle to start accepting applications for a specific class.
+                                                </EmptyDescription>
+                                            </EmptyHeader>
+
+                                            <Button
+                                                :as="ModalLink"
+                                                :href="admissionCyclesCreate().url">
+                                                <Plus />
+                                                Create First Cycle
+                                            </Button>
+                                        </Empty>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
                     </div>
                 </div>
             </div>

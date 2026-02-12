@@ -1,25 +1,22 @@
+import * as admin from '@/routes/admin'
+import * as bursar from '@/routes/bursar'
+import { redirect as dashboardRedirect } from '@/routes/dashboard'
+import * as registrar from '@/routes/registrar'
+import * as teacher from '@/routes/teacher'
+import type { NavItem } from '@/types'
 import {
-  LayoutGrid,
-  Users,
-  BookOpen,
-  Wallet,
-  GraduationCap,
-  Construction,
-  Settings,
+  BarChart3,
   Calendar,
   ClipboardCheck,
   ClipboardList,
+  Construction,
   FileText,
-  BarChart3,
+  GraduationCap,
+  LayoutGrid,
   Megaphone,
   PenLine,
+  Users
 } from 'lucide-vue-next'
-import type { NavItem } from '@/types'
-import * as admin from '@/routes/admin'
-import * as teacher from '@/routes/teacher'
-import * as registrar from '@/routes/registrar'
-import * as bursar from '@/routes/bursar'
-import { redirect as dashboardRedirect } from '@/routes/dashboard'
 
 export const navigation = {
   admin: <NavItem[]>[

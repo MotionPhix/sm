@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import AppLayout from '@/layouts/AppLayout.vue'
 import { dashboard as adminDashboard } from '@/routes/admin'
-import { ArrowUpRight, Users, AlertCircle } from 'lucide-vue-next'
+import { Head } from '@inertiajs/vue3'
+import { AlertCircle, ArrowUpRight } from 'lucide-vue-next'
 
 interface ClassInfo {
     id: number

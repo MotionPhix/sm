@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
 import {
     SidebarGroup,
     SidebarGroupContent,
@@ -8,9 +6,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Settings, CreditCard } from 'lucide-vue-next';
-import { index as academicYearsIndex } from '@/routes/admin/settings/academic-year';
 import { index as billingIndex } from '@/routes/admin/billing';
+import { index as academicYearsIndex } from '@/routes/admin/settings/academic-year';
+import { Link, usePage } from '@inertiajs/vue3';
+import { CreditCard, Settings } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const page = usePage();
 

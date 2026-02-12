@@ -140,7 +140,7 @@ const getCategoryColor = (category: string): string => {
                                     <TableHead>Category</TableHead>
                                     <TableHead>Type</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead class="text-right">Actions</TableHead>
+                                    <TableHead class="text-right" />
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

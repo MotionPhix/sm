@@ -1,28 +1,16 @@
-import { computed } from 'vue'
 import { useActiveRoute } from '@/composables/useActiveRoute'
-import type { NavItem } from '@/types'
-import {
-    Calendar,
-    Clock,
-    GraduationCap,
-    DollarSign,
-    Construction,
-    BookOpen,
-    SplitSquareVertical,
-    Building2,
-    School,
-    ClipboardList,
-    BarChart3,
-} from 'lucide-vue-next'
 import {
     index as academicYearsIndex
 } from '@/routes/admin/settings/academic-year'
 import {
-    index as termsIndex
-} from '@/routes/admin/settings/terms'
-import {
     index as admissionCyclesIndex
 } from '@/routes/admin/settings/admission-cycles'
+import {
+    index as assessmentPlansIndex
+} from '@/routes/admin/settings/assessment-plans'
+import {
+    index as classesIndex
+} from '@/routes/admin/settings/classes'
 import {
     index as feeItemsIndex
 } from '@/routes/admin/settings/fee-items'
@@ -30,8 +18,11 @@ import {
     index as feeStructuresIndex
 } from '@/routes/admin/settings/fee-structures'
 import {
-    index as classesIndex
-} from '@/routes/admin/settings/classes'
+    index as gradeScalesIndex
+} from '@/routes/admin/settings/grade-scales'
+import {
+    show as schoolProfileShow
+} from '@/routes/admin/settings/school-profile'
 import {
     index as streamsIndex
 } from '@/routes/admin/settings/streams'
@@ -39,14 +30,27 @@ import {
     index as subjectsIndex
 } from '@/routes/admin/settings/subjects'
 import {
-    show as schoolProfileShow
-} from '@/routes/admin/settings/school-profile'
+    index as teacherAssignmentsIndex
+} from '@/routes/admin/settings/teacher-assignments'
 import {
-    index as assessmentPlansIndex
-} from '@/routes/admin/settings/assessment-plans'
+    index as termsIndex
+} from '@/routes/admin/settings/terms'
+import type { NavItem } from '@/types'
 import {
-    index as gradeScalesIndex
-} from '@/routes/admin/settings/grade-scales'
+    BarChart3,
+    BookOpen,
+    Building2,
+    Calendar,
+    ClipboardList,
+    Clock,
+    Construction,
+    DollarSign,
+    GraduationCap,
+    School,
+    SplitSquareHorizontal,
+    UserCheck,
+} from 'lucide-vue-next'
+import { computed } from 'vue'
 
 /**
  * Composable for Admin Settings secondary navigation
@@ -66,6 +70,7 @@ export function useAdminSettingsNavigation() {
         const classesHref = classesIndex.url()
         const streamsHref = streamsIndex.url()
         const subjectsHref = subjectsIndex.url()
+        const teacherAssignmentsHref = teacherAssignmentsIndex.url()
         const admissionCyclesHref = admissionCyclesIndex.url()
         const feeItemsHref = feeItemsIndex.url()
         const feeStructuresHref = feeStructuresIndex.url()
@@ -79,6 +84,7 @@ export function useAdminSettingsNavigation() {
             classesHref,
             streamsHref,
             subjectsHref,
+            teacherAssignmentsHref,
             admissionCyclesHref,
             feeItemsHref,
             feeStructuresHref,
@@ -113,7 +119,7 @@ export function useAdminSettingsNavigation() {
             },
             {
                 title: 'Streams',
-                icon: SplitSquareVertical,
+                icon: SplitSquareHorizontal,
                 href: streamsHref,
                 isActive: isNavItemActive(streamsHref, allHrefs.filter(h => h !== streamsHref)),
             },
@@ -122,6 +128,12 @@ export function useAdminSettingsNavigation() {
                 icon: BookOpen,
                 href: subjectsHref,
                 isActive: isNavItemActive(subjectsHref, allHrefs.filter(h => h !== subjectsHref)),
+            },
+            {
+                title: 'Teacher Assignments',
+                icon: UserCheck,
+                href: teacherAssignmentsHref,
+                isActive: isNavItemActive(teacherAssignmentsHref, allHrefs.filter(h => h !== teacherAssignmentsHref)),
             },
             {
                 title: 'Admission Cycles',

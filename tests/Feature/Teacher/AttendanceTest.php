@@ -10,6 +10,7 @@ use App\Models\SchoolClass;
 use App\Models\Stream;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
+use App\Models\Subject;
 use App\Models\TeacherAssignment;
 use App\Models\Term;
 use App\Models\User;
@@ -29,13 +30,32 @@ beforeEach(function () {
         'ends_at' => now()->endOfYear(),
     ]);
 
-    // Create term within academic year
+    // Create 3 terms (onboarding requires 3)
     $this->term = Term::factory()->create([
         'school_id' => $this->school->id,
         'academic_year_id' => $this->academicYear->id,
+        'name' => 'Term 1',
         'starts_on' => now()->subMonth(),
         'ends_on' => now()->addMonth(),
         'is_active' => true,
+    ]);
+
+    Term::factory()->create([
+        'school_id' => $this->school->id,
+        'academic_year_id' => $this->academicYear->id,
+        'name' => 'Term 2',
+        'starts_on' => now()->addMonths(2),
+        'ends_on' => now()->addMonths(4),
+        'is_active' => false,
+    ]);
+
+    Term::factory()->create([
+        'school_id' => $this->school->id,
+        'academic_year_id' => $this->academicYear->id,
+        'name' => 'Term 3',
+        'starts_on' => now()->addMonths(5),
+        'ends_on' => now()->addMonths(7),
+        'is_active' => false,
     ]);
 
     // Create class and stream
@@ -47,6 +67,11 @@ beforeEach(function () {
     $this->stream = Stream::factory()->create([
         'school_id' => $this->school->id,
         'name' => 'A',
+    ]);
+
+    // Create subject (onboarding requires at least one)
+    Subject::factory()->create([
+        'school_id' => $this->school->id,
     ]);
 
     // Create classroom assignment
@@ -113,6 +138,55 @@ it('shows attendance index page for authorized teacher', function () {
             ->has('classes')
             ->has('streams')
             ->has('academicYear')
+            ->has('roster', 0)
+            ->has('filters')
+        );
+});
+
+it('returns roster via URL filters on index page', function () {
+    $response = $this->actingAs($this->teacher)
+        ->get(route('teacher.attendance.index', [
+            'class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
+            'date' => now()->toDateString(),
+        ]));
+
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('teacher/attendance/Index')
+            ->has('roster', 3)
+            ->where('filters.class_id', (string) $this->class->id)
+            ->where('filters.stream_id', (string) $this->stream->id)
+            ->where('filters.date', now()->toDateString())
+        );
+});
+
+it('returns existing attendance records via URL filters on index page', function () {
+    // Create existing attendance records
+    foreach ($this->students as $student) {
+        AttendanceRecord::factory()->create([
+            'school_id' => $this->school->id,
+            'academic_year_id' => $this->academicYear->id,
+            'date' => now()->toDateString(),
+            'school_class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
+            'student_id' => $student->id,
+            'status' => 'present',
+            'recorded_by' => $this->teacher->id,
+        ]);
+    }
+
+    $response = $this->actingAs($this->teacher)
+        ->get(route('teacher.attendance.index', [
+            'class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
+            'date' => now()->toDateString(),
+        ]));
+
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('roster', 3)
+            ->has('existing', 3)
         );
 });
 
@@ -410,7 +484,7 @@ it('exports attendance as CSV', function () {
         ->get(route('teacher.attendance.export'));
 
     $response->assertOk()
-        ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+        ->assertHeader('Content-Type', 'text/csv; charset=utf-8');
 });
 
 it('records metadata for attendance submissions', function () {

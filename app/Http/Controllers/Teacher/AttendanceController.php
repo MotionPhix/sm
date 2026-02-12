@@ -42,15 +42,50 @@ class AttendanceController extends Controller
             ->orderBy('name')
             ->get();
 
-        $date = $request->date
+        $date = $request->filled('date')
             ? Carbon::parse($request->date)->toDateString()
             : now()->toDateString();
+
+        $roster = [];
+        $existing = [];
+
+        if ($request->filled('class_id') && $year) {
+            $class = SchoolClass::where('school_id', $school->id)->find($request->class_id);
+            $stream = $request->filled('stream_id')
+                ? Stream::where('school_id', $school->id)->find($request->stream_id)
+                : null;
+
+            if ($class) {
+                $roster = $this->getEnrolledStudents(
+                    $school->id,
+                    $year->id,
+                    $class->id,
+                    $stream?->id
+                )->toArray();
+
+                $existing = AttendanceRecord::query()
+                    ->where('school_id', $school->id)
+                    ->where('academic_year_id', $year->id)
+                    ->whereDate('date', $date)
+                    ->whereIn('student_id', collect($roster)->pluck('id'))
+                    ->get()
+                    ->keyBy('student_id')
+                    ->toArray();
+            }
+        }
 
         return Inertia::render('teacher/attendance/Index', [
             'date' => $date,
             'classes' => $classes,
             'streams' => $streams,
             'academicYear' => $year,
+            'roster' => $roster,
+            'existing' => $existing,
+            'filters' => [
+                'date' => $date,
+                'class_id' => $request->input('class_id'),
+                'stream_id' => $request->input('stream_id'),
+            ],
         ]);
     }
 
@@ -185,25 +220,39 @@ class AttendanceController extends Controller
         $this->validateTermContext($school->id, $year->id, $data['date']);
 
         $now = now();
+        $attendanceDate = Carbon::parse($data['date']);
 
         foreach ($data['records'] as $rec) {
-            // Use updateOrCreate to prevent duplicates and handle updates atomically
-            AttendanceRecord::updateOrCreate(
-                [
-                    'school_id' => $school->id,
-                    'academic_year_id' => $year->id,
-                    'date' => $data['date'],
-                    'student_id' => $rec['student_id'],
-                ],
-                [
+            $existing = AttendanceRecord::query()
+                ->where('school_id', $school->id)
+                ->where('academic_year_id', $year->id)
+                ->whereDate('date', $attendanceDate)
+                ->where('student_id', $rec['student_id'])
+                ->first();
+
+            if ($existing) {
+                $existing->update([
                     'school_class_id' => $class->id,
                     'stream_id' => $stream?->id,
                     'status' => $rec['status'],
                     'remarks' => $rec['remarks'] ?? null,
                     'recorded_by' => $request->user()->id,
                     'recorded_at' => $now,
-                ]
-            );
+                ]);
+            } else {
+                AttendanceRecord::create([
+                    'school_id' => $school->id,
+                    'academic_year_id' => $year->id,
+                    'date' => $attendanceDate,
+                    'student_id' => $rec['student_id'],
+                    'school_class_id' => $class->id,
+                    'stream_id' => $stream?->id,
+                    'status' => $rec['status'],
+                    'remarks' => $rec['remarks'] ?? null,
+                    'recorded_by' => $request->user()->id,
+                    'recorded_at' => $now,
+                ]);
+            }
         }
 
         return redirect()

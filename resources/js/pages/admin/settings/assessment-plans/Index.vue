@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import { Head, router, usePage } from '@inertiajs/vue3'
-import { computed } from 'vue'
-import { Button } from '@/components/ui/button'
-import AppLayout from '@/layouts/AppLayout.vue'
-import AdminSettingsLayout from '@/layouts/AdminSettingsLayout.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import HeadingSmall from '@/components/HeadingSmall.vue'
-import { Plus, Trash2, Edit2, ClipboardList, Check, AlertCircle } from 'lucide-vue-next'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import {
     Table,
     TableBody,
     TableCell,
+    TableEmpty,
     TableHead,
     TableHeader,
     TableRow,
-    TableEmpty,
 } from '@/components/ui/table'
-import { ModalLink } from '@inertiaui/modal-vue'
-import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { useConfirm } from '@/composables/useConfirm'
-import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
 import { useAdminSettingsNavigation } from '@/composables/useAdminSettingsNavigation'
-import { create as plansCreate, edit as plansEdit, destroy as plansDestroy } from '@/routes/admin/settings/assessment-plans'
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { useBreadcrumbs } from '@/composables/useBreadcrumbs'
+import { useConfirm } from '@/composables/useConfirm'
+import AdminSettingsLayout from '@/layouts/AdminSettingsLayout.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import { create as plansCreate, destroy as plansDestroy, edit as plansEdit } from '@/routes/admin/settings/assessment-plans'
+import { Head, router, usePage } from '@inertiajs/vue3'
+import { ModalLink } from '@inertiaui/modal-vue'
+import { AlertCircle, Check, ClipboardList, Edit2, Plus, Trash2 } from 'lucide-vue-next'
+import { computed } from 'vue'
 
 interface Term {
     id: number
@@ -183,7 +183,7 @@ const groupedPlans = computed(() => {
                                     <TableHead class="text-center">Max Score</TableHead>
                                     <TableHead class="text-center">Weight (%)</TableHead>
                                     <TableHead class="text-center">Status</TableHead>
-                                    <TableHead class="text-right">Actions</TableHead>
+                                    <TableHead class="text-right" />
                                 </TableRow>
                             </TableHeader>
                             <TableBody v-if="assessmentPlans.data.length > 0">

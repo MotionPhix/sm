@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SchoolProfileController;
 use App\Http\Controllers\Admin\StreamController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\TeacherAssignmentController;
 use App\Http\Controllers\Admin\TermController;
 use Illuminate\Support\Facades\Route;
 
@@ -125,6 +126,10 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:admin'])
 
                 // Subjects
                 Route::resource('subjects', SubjectController::class)
+                    ->except(['show']);
+
+                // Teacher Assignments
+                Route::resource('teacher-assignments', TeacherAssignmentController::class)
                     ->except(['show']);
 
                 // Admission Cycles

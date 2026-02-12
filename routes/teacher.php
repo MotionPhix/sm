@@ -66,6 +66,7 @@ Route::middleware(['auth', 'verified', 'school.context', 'role:teacher,head_teac
         // Class Reports
         Route::middleware('permission:students.view')->group(function () {
             Route::get('/class-reports', [ClassReportController::class, 'index'])->name('class-reports.index');
+            Route::get('/class-reports/show', [ClassReportController::class, 'show'])->name('class-reports.show');
         });
 
         // Announcements

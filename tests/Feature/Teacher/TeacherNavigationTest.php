@@ -135,7 +135,8 @@ it('allows teacher to access the class reports page', function () {
         ->assertInertia(fn ($page) => $page
             ->component('teacher/class-reports/Index')
             ->has('academicYear')
-            ->has('assignments')
+            ->has('classrooms')
+            ->has('terms')
         );
 });
 

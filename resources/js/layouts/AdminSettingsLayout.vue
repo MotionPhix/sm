@@ -3,9 +3,8 @@ import Heading from '@/components/Heading.vue'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { toUrl } from '@/lib/utils'
-import { usePage } from '@inertiajs/vue3'
 import { type NavItem } from '@/types'
-import { Link } from '@inertiajs/vue3'
+import { Link, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
 
 interface Props {
@@ -22,30 +21,30 @@ const isItemActive = computed(() => (item: any) => {
     if (!item.href || item.href === '#') {
         return false
     }
-    
+
     const currentPath = page.url.split('?')[0].split('#')[0]
     const itemPath = toUrl(item.href).split('?')[0].split('#')[0]
-    
+
     // Check if current path matches this item (exact or child)
     const isMatch = currentPath === itemPath || currentPath.startsWith(itemPath + '/')
-    
+
     if (!isMatch) {
         return false
     }
-    
+
     // If it matches, check if any sibling is a better match (longer path = more specific)
     for (const sibling of props.items) {
         if (sibling.href === item.href) continue
-        
+
         const siblingPath = toUrl(sibling.href).split('?')[0].split('#')[0]
         const siblingMatches = currentPath === siblingPath || currentPath.startsWith(siblingPath + '/')
-        
+
         // If sibling also matches AND is longer/more specific, this item is not active
         if (siblingMatches && siblingPath.length > itemPath.length) {
             return false
         }
     }
-    
+
     return true
 })
 </script>
@@ -57,7 +56,7 @@ const isItemActive = computed(() => (item: any) => {
         <div class="flex flex-col lg:flex-row lg:space-x-12">
             <!-- Sidebar Navigation -->
             <aside class="w-full max-w-xl lg:w-48">
-                <nav class="flex flex-col space-y-1 space-x-0">
+                <nav class="flex flex-col space-y-1 space-x-0 sticky top-6">
                     <Link
                         v-for="item in props.items"
                         :key="toUrl(item.href)"
