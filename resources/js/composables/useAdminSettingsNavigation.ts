@@ -8,7 +8,7 @@ import {
     DollarSign,
     Construction,
     BookOpen,
-    SplitSquareHorizontal,
+    SplitSquareVertical,
     Building2,
     School,
     ClipboardList,
@@ -113,7 +113,7 @@ export function useAdminSettingsNavigation() {
             },
             {
                 title: 'Streams',
-                icon: SplitSquareHorizontal,
+                icon: SplitSquareVertical,
                 href: streamsHref,
                 isActive: isNavItemActive(streamsHref, allHrefs.filter(h => h !== streamsHref)),
             },
