@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3'
+import { Form, Head, useForm } from '@inertiajs/vue3'
 import { Modal } from '@inertiaui/modal-vue'
 import InputError from '@/components/InputError.vue'
 import {
@@ -10,7 +10,7 @@ import {
 } from '@/components/modal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { update } from '@/routes/admin/settings/classes'
 import { ref } from 'vue'
 import { Spinner } from '@/components/ui/spinner'
@@ -28,13 +28,21 @@ const props = defineProps<{
 const editForm = ref()
 const editModal = ref()
 
-const form = ref({
+const form = useForm({
     name: props.schoolClass.name,
     order: props.schoolClass.order,
 })
 
 const handleSuccess = () => {
-    editModal.value?.close()
+    form.put(update(props.schoolClass.id).url, {
+        onSuccess: () => {
+            editModal.value?.close()
+        }
+    })
+}
+
+const updateClass = () => {
+
 }
 </script>
 
@@ -52,23 +60,21 @@ const handleSuccess = () => {
                 description="Update class details" />
 
             <ModalScrollable>
-                <Form ref="editForm" v-bind="{ url: update(props.schoolClass.id).url, method: 'put', data: form }"
-                    v-slot="{ errors, processing }" @success="handleSuccess"
-                    :options="{ preserveScroll: true }">
+                <form>
                     <FieldGroup>
-                        <Field :data-invalid="errors.name">
+                        <Field :data-invalid="form.errors.name">
                             <FieldLabel for="edit-name">Class Name *</FieldLabel>
                             <Input 
                                 id="edit-name" 
                                 v-model="form.name" 
                                 type="text" 
-                                class="bg-background" />
-                            <InputError class="mt-1" :message="errors.name" />
+                                class="bg-background" 
+                            />
+                            
+                            <InputError class="mt-1" :message="form.errors.name" />
                         </Field>
-                    </FieldGroup>
-
-                    <FieldGroup>
-                        <Field :data-invalid="errors.order">
+                        
+                        <Field :data-invalid="form.errors.order">
                             <FieldLabel for="edit-order">Order *</FieldLabel>
                             <Input 
                                 id="edit-order" 
@@ -76,24 +82,28 @@ const handleSuccess = () => {
                                 type="number"
                                 min="1"
                                 class="bg-background" />
-                            <p class="mt-1 text-xs text-muted-foreground">
+                            <FieldDescription class="text-xs text-muted-foreground">
                                 Determines the sequence of classes
-                            </p>
-                            <InputError class="mt-1" :message="errors.order" />
+                            </FieldDescription>
+                            <InputError :message="form.errors.order" />
                         </Field>
                     </FieldGroup>
-
-                    <ModalFooter>
-                        <Button type="button" variant="outline" @click="close">
-                            Cancel
-                        </Button>
-                        <Button type="submit" :disabled="processing">
-                            <Spinner v-if="processing" />
-                            {{ processing ? 'Updating...' : 'Update Class' }}
-                        </Button>
-                    </ModalFooter>
-                </Form>
+                </form>
             </ModalScrollable>
+
+            <ModalFooter>
+                <Button type="button" variant="outline" @click="close">
+                    Cancel
+                </Button>
+
+                <Button 
+                    type="submit" 
+                    @click="editForm.submit()"
+                    :disabled="form.processing">
+                    <Spinner v-if="form.processing" />
+                    {{ form.processing ? 'Updating...' : 'Update Class' }}
+                </Button>
+            </ModalFooter>
         </ModalRoot>
     </Modal>
 </template>
