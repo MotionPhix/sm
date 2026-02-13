@@ -18,7 +18,8 @@ class UpdateTeacherAssignmentRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'integer', 'exists:users,id'],
-            'class_stream_assignment_id' => ['required', 'integer', 'exists:class_stream_assignments,id'],
+            'school_class_id' => ['required', 'integer', 'exists:school_classes,id'],
+            'stream_id' => ['required', 'integer', 'exists:streams,id'],
             'subject_id' => ['required', 'integer', 'exists:subjects,id'],
         ];
     }
@@ -30,7 +31,8 @@ class UpdateTeacherAssignmentRequest extends FormRequest
     {
         return [
             'user_id.required' => 'Please select a teacher.',
-            'class_stream_assignment_id.required' => 'Please select a classroom.',
+            'school_class_id.required' => 'Please select a class.',
+            'stream_id.required' => 'Please select a stream.',
             'subject_id.required' => 'Please select a subject.',
         ];
     }

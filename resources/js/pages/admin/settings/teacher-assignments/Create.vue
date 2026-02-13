@@ -13,7 +13,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { store } from '@/routes/admin/settings/teacher-assignments'
 import { Form, Head } from '@inertiajs/vue3'
 import { Modal } from '@inertiaui/modal-vue'
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 interface Teacher {
     id: number
@@ -21,10 +21,20 @@ interface Teacher {
     email: string
 }
 
+interface SchoolClass {
+    id: number
+    name: string
+}
+
+interface Stream {
+    id: number
+    name: string
+}
+
 interface Classroom {
     id: number
-    school_class: { id: number; name: string } | null
-    stream: { id: number; name: string } | null
+    school_class: SchoolClass | null
+    stream: Stream | null
 }
 
 interface Subject {
@@ -44,19 +54,42 @@ const createModal = ref()
 
 const form = ref({
     user_id: '' as string | number,
-    class_stream_assignment_id: '' as string | number,
-    subject_id: '' as string | number,
+    school_class_id: '' as string | number,
+    stream_id: '' as string | number,
+    subject_ids: [] as number[],
+})
+
+const uniqueClasses = computed(() => {
+    const classMap = new Map<number, SchoolClass>()
+    for (const classroom of props.classrooms) {
+        if (classroom.school_class && !classMap.has(classroom.school_class.id)) {
+            classMap.set(classroom.school_class.id, classroom.school_class)
+        }
+    }
+    return Array.from(classMap.values())
+})
+
+const filteredStreams = computed(() => {
+    const classId = Number(form.value.school_class_id)
+    if (!classId) return []
+    return props.classrooms
+        .filter(c => c.school_class?.id === classId && c.stream)
+        .map(c => c.stream!)
+})
+
+watch(() => form.value.school_class_id, () => {
+    form.value.stream_id = ''
 })
 
 const handleSuccess = () => {
     createModal.value?.close()
-    createForm.value?.resetAndClearErrors()
-}
-
-const classroomName = (classroom: Classroom) => {
-    const className = classroom.school_class?.name ?? 'Unknown'
-    const streamName = classroom.stream?.name
-    return streamName ? `${className} - ${streamName}` : className
+    form.value = {
+        user_id: '',
+        school_class_id: '',
+        stream_id: '',
+        subject_ids: [],
+    }
+    createForm.value?.clearErrors()
 }
 </script>
 
@@ -72,7 +105,7 @@ const classroomName = (classroom: Classroom) => {
         <ModalRoot>
             <ModalHeader
                 title="Add Teacher Assignment"
-                description="Assign a teacher to a class and subject"
+                description="Assign a teacher to a class, stream, and subjects"
             />
 
             <ModalScrollable>
@@ -82,7 +115,7 @@ const classroomName = (classroom: Classroom) => {
                     <FieldGroup>
                         <Field :data-invalid="errors.user_id">
                             <FieldLabel for="create-teacher">Teacher *</FieldLabel>
-                            <Select name="user_id">
+                            <Select v-model="form.user_id">
                                 <SelectTrigger id="create-teacher" class="bg-background">
                                     <SelectValue placeholder="Select a teacher" />
                                 </SelectTrigger>
@@ -95,35 +128,49 @@ const classroomName = (classroom: Classroom) => {
                             <InputError :message="errors.user_id" />
                         </Field>
 
-                        <Field :data-invalid="errors.class_stream_assignment_id">
-                            <FieldLabel for="create-classroom">Classroom *</FieldLabel>
-                            <Select name="class_stream_assignment_id">
-                                <SelectTrigger id="create-classroom" class="bg-background">
-                                    <SelectValue placeholder="Select a classroom" />
+                        <Field :data-invalid="errors.school_class_id">
+                            <FieldLabel for="create-class">Class *</FieldLabel>
+                            <Select v-model="form.school_class_id">
+                                <SelectTrigger id="create-class" class="bg-background">
+                                    <SelectValue placeholder="Select a class" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem v-for="classroom in classrooms" :key="classroom.id" :value="classroom.id">
-                                        {{ classroomName(classroom) }}
+                                    <SelectItem v-for="klass in uniqueClasses" :key="klass.id" :value="klass.id">
+                                        {{ klass.name }}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <InputError :message="errors.class_stream_assignment_id" />
+                            <InputError :message="errors.school_class_id" />
                         </Field>
 
-                        <Field :data-invalid="errors.subject_id">
-                            <FieldLabel for="create-subject">Subject *</FieldLabel>
-                            <Select name="subject_id" multiple>
-                                <SelectTrigger id="create-subject" class="bg-background">
-                                    <SelectValue placeholder="Select a subject" />
+                        <Field :data-invalid="errors.stream_id">
+                            <FieldLabel for="create-stream">Stream *</FieldLabel>
+                            <Select v-model="form.stream_id" :disabled="!form.school_class_id">
+                                <SelectTrigger id="create-stream" class="bg-background">
+                                    <SelectValue placeholder="Select a stream" />
                                 </SelectTrigger>
-
                                 <SelectContent>
-                                    <SelectItem v-for="subject in subjects" :key="subject.id" :value="subject.id">
-                                        {{ subject.code }} - {{ subject.name }}
+                                    <SelectItem v-for="stream in filteredStreams" :key="stream.id" :value="stream.id">
+                                        {{ stream.name }}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <InputError :message="errors.subject_id" />
+                            <InputError :message="errors.stream_id" />
+                        </Field>
+
+                        <Field :data-invalid="errors.subject_ids || errors['subject_ids.0']">
+                            <FieldLabel for="create-subjects">Subjects *</FieldLabel>
+                            <Select v-model="form.subject_ids" multiple>
+                                <SelectTrigger id="create-subjects" class="bg-background">
+                                    <SelectValue placeholder="Select subjects" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem v-for="subject in subjects" :key="subject.id" :value="subject.id">
+                                        {{ subject.code ? `${subject.code} - ${subject.name}` : subject.name }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <InputError :message="errors.subject_ids || errors['subject_ids.0']" />
                         </Field>
                     </FieldGroup>
                 </Form>

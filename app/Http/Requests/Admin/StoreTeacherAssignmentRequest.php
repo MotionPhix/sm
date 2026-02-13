@@ -18,8 +18,10 @@ class StoreTeacherAssignmentRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'integer', 'exists:users,id'],
-            'class_stream_assignment_id' => ['required', 'integer', 'exists:class_stream_assignments,id'],
-            'subject_id' => ['required', 'integer', 'exists:subjects,id'],
+            'school_class_id' => ['required', 'integer', 'exists:school_classes,id'],
+            'stream_id' => ['required', 'integer', 'exists:streams,id'],
+            'subject_ids' => ['required', 'array', 'min:1'],
+            'subject_ids.*' => ['required', 'integer', 'exists:subjects,id'],
         ];
     }
 
@@ -30,8 +32,10 @@ class StoreTeacherAssignmentRequest extends FormRequest
     {
         return [
             'user_id.required' => 'Please select a teacher.',
-            'class_stream_assignment_id.required' => 'Please select a classroom.',
-            'subject_id.required' => 'Please select a subject.',
+            'school_class_id.required' => 'Please select a class.',
+            'stream_id.required' => 'Please select a stream.',
+            'subject_ids.required' => 'Please select at least one subject.',
+            'subject_ids.min' => 'Please select at least one subject.',
         ];
     }
 }

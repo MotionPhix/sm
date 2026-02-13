@@ -15,7 +15,8 @@
       "Bash(\"C:\\\\Users\\\\Axel\\\\.config\\\\herd\\\\bin\\\\php.bat\" artisan make:migration add_subject_id_to_teacher_assignments_table --no-interaction)",
       "Bash(php artisan make:controller:*)",
       "Bash(/c/Users/DesignTeam/.config/herd/bin/php.bat vendor/bin/pint --dirty)",
-      "Bash(/c/Users/DesignTeam/.config/herd/bin/php.bat artisan test:*)"
+      "Bash(/c/Users/DesignTeam/.config/herd/bin/php.bat artisan test:*)",
+      "mcp__laravel-boost__database-query"
     ]
   }
 }

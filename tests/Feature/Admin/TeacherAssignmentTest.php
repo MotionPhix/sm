@@ -97,8 +97,9 @@ it('can create a teacher assignment', function () {
     actingAs($this->admin)
         ->post(route('admin.settings.teacher-assignments.store'), [
             'user_id' => $this->teacher->id,
-            'class_stream_assignment_id' => $this->classroom->id,
-            'subject_id' => $this->subject->id,
+            'school_class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
+            'subject_ids' => [$this->subject->id],
         ])
         ->assertRedirect(route('admin.settings.teacher-assignments.index'));
 
@@ -111,20 +112,100 @@ it('can create a teacher assignment', function () {
     ]);
 });
 
+it('can create multiple assignments for multiple subjects', function () {
+    $subject2 = Subject::factory()->forSchool($this->school)->create(['name' => 'English', 'code' => 'ENG']);
+    $subject3 = Subject::factory()->forSchool($this->school)->create(['name' => 'Science', 'code' => 'SCI']);
+
+    actingAs($this->admin)
+        ->post(route('admin.settings.teacher-assignments.store'), [
+            'user_id' => $this->teacher->id,
+            'school_class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
+            'subject_ids' => [$this->subject->id, $subject2->id, $subject3->id],
+        ])
+        ->assertRedirect(route('admin.settings.teacher-assignments.index'));
+
+    expect(TeacherAssignment::count())->toBe(3);
+
+    $this->assertDatabaseHas('teacher_assignments', [
+        'user_id' => $this->teacher->id,
+        'class_stream_assignment_id' => $this->classroom->id,
+        'subject_id' => $this->subject->id,
+    ]);
+    $this->assertDatabaseHas('teacher_assignments', [
+        'user_id' => $this->teacher->id,
+        'class_stream_assignment_id' => $this->classroom->id,
+        'subject_id' => $subject2->id,
+    ]);
+    $this->assertDatabaseHas('teacher_assignments', [
+        'user_id' => $this->teacher->id,
+        'class_stream_assignment_id' => $this->classroom->id,
+        'subject_id' => $subject3->id,
+    ]);
+});
+
+it('skips duplicate assignments when creating', function () {
+    // Pre-existing assignment
+    TeacherAssignment::create([
+        'user_id' => $this->teacher->id,
+        'class_stream_assignment_id' => $this->classroom->id,
+        'subject_id' => $this->subject->id,
+    ]);
+
+    $subject2 = Subject::factory()->forSchool($this->school)->create(['name' => 'English', 'code' => 'ENG']);
+
+    actingAs($this->admin)
+        ->post(route('admin.settings.teacher-assignments.store'), [
+            'user_id' => $this->teacher->id,
+            'school_class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
+            'subject_ids' => [$this->subject->id, $subject2->id],
+        ])
+        ->assertRedirect(route('admin.settings.teacher-assignments.index'))
+        ->assertSessionHas('success');
+
+    expect(TeacherAssignment::count())->toBe(2);
+});
+
 it('validates required fields when creating', function () {
     actingAs($this->admin)
         ->post(route('admin.settings.teacher-assignments.store'), [])
-        ->assertSessionHasErrors(['user_id', 'class_stream_assignment_id', 'subject_id']);
+        ->assertSessionHasErrors(['user_id', 'school_class_id', 'stream_id', 'subject_ids']);
 });
 
 it('validates foreign keys exist when creating', function () {
     actingAs($this->admin)
         ->post(route('admin.settings.teacher-assignments.store'), [
             'user_id' => 99999,
-            'class_stream_assignment_id' => 99999,
-            'subject_id' => 99999,
+            'school_class_id' => 99999,
+            'stream_id' => 99999,
+            'subject_ids' => [99999],
         ])
-        ->assertSessionHasErrors(['user_id', 'class_stream_assignment_id', 'subject_id']);
+        ->assertSessionHasErrors(['user_id', 'school_class_id', 'stream_id', 'subject_ids.0']);
+});
+
+it('validates subject_ids must be an array', function () {
+    actingAs($this->admin)
+        ->post(route('admin.settings.teacher-assignments.store'), [
+            'user_id' => $this->teacher->id,
+            'school_class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
+            'subject_ids' => 'not-an-array',
+        ])
+        ->assertSessionHasErrors(['subject_ids']);
+});
+
+it('returns 404 when class and stream combination does not exist', function () {
+    $otherStream = Stream::factory()->forSchool($this->school)->create(['name' => 'Z']);
+
+    actingAs($this->admin)
+        ->post(route('admin.settings.teacher-assignments.store'), [
+            'user_id' => $this->teacher->id,
+            'school_class_id' => $this->class->id,
+            'stream_id' => $otherStream->id,
+            'subject_ids' => [$this->subject->id],
+        ])
+        ->assertNotFound();
 });
 
 it('displays the edit teacher assignment page', function () {
@@ -158,7 +239,8 @@ it('can update a teacher assignment', function () {
     actingAs($this->admin)
         ->put(route('admin.settings.teacher-assignments.update', $assignment), [
             'user_id' => $this->teacher->id,
-            'class_stream_assignment_id' => $this->classroom->id,
+            'school_class_id' => $this->class->id,
+            'stream_id' => $this->stream->id,
             'subject_id' => $newSubject->id,
         ])
         ->assertRedirect(route('admin.settings.teacher-assignments.index'));

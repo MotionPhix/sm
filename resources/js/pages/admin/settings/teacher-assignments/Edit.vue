@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3'
-import { Modal } from '@inertiaui/modal-vue'
 import InputError from '@/components/InputError.vue'
 import {
     ModalFooter,
@@ -11,9 +9,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { update } from '@/routes/admin/settings/teacher-assignments'
-import { ref } from 'vue'
 import { Spinner } from '@/components/ui/spinner'
+import { update } from '@/routes/admin/settings/teacher-assignments'
+import { Form, Head } from '@inertiajs/vue3'
+import { Modal } from '@inertiaui/modal-vue'
+import { computed, ref, watch } from 'vue'
 
 interface Teacher {
     id: number
@@ -21,10 +21,20 @@ interface Teacher {
     email: string
 }
 
+interface SchoolClass {
+    id: number
+    name: string
+}
+
+interface Stream {
+    id: number
+    name: string
+}
+
 interface Classroom {
     id: number
-    school_class: { id: number; name: string } | null
-    stream: { id: number; name: string } | null
+    school_class: SchoolClass | null
+    stream: Stream | null
 }
 
 interface Subject {
@@ -55,18 +65,37 @@ const editModal = ref()
 
 const form = ref({
     user_id: props.assignment.user_id as string | number,
-    class_stream_assignment_id: props.assignment.class_stream_assignment_id as string | number,
+    school_class_id: (props.assignment.classroom?.school_class?.id ?? '') as string | number,
+    stream_id: (props.assignment.classroom?.stream?.id ?? '') as string | number,
     subject_id: props.assignment.subject_id as string | number,
+})
+
+const uniqueClasses = computed(() => {
+    const classMap = new Map<number, SchoolClass>()
+    for (const classroom of props.classrooms) {
+        if (classroom.school_class && !classMap.has(classroom.school_class.id)) {
+            classMap.set(classroom.school_class.id, classroom.school_class)
+        }
+    }
+    return Array.from(classMap.values())
+})
+
+const filteredStreams = computed(() => {
+    const classId = Number(form.value.school_class_id)
+    if (!classId) return []
+    return props.classrooms
+        .filter(c => c.school_class?.id === classId && c.stream)
+        .map(c => c.stream!)
+})
+
+watch(() => form.value.school_class_id, (newVal, oldVal) => {
+    if (oldVal !== '') {
+        form.value.stream_id = ''
+    }
 })
 
 const handleSuccess = () => {
     editModal.value?.close()
-}
-
-const classroomName = (classroom: Classroom) => {
-    const className = classroom.school_class?.name ?? 'Unknown'
-    const streamName = classroom.stream?.name
-    return streamName ? `${className} - ${streamName}` : className
 }
 </script>
 
@@ -102,26 +131,37 @@ const classroomName = (classroom: Classroom) => {
                             </Select>
                             <InputError class="mt-1" :message="errors.user_id" />
                         </Field>
-                    </FieldGroup>
 
-                    <FieldGroup>
-                        <Field :data-invalid="errors.class_stream_assignment_id">
-                            <FieldLabel for="edit-classroom">Classroom *</FieldLabel>
-                            <Select v-model="form.class_stream_assignment_id">
-                                <SelectTrigger id="edit-classroom" class="bg-background">
-                                    <SelectValue placeholder="Select a classroom" />
+                        <Field :data-invalid="errors.school_class_id">
+                            <FieldLabel for="edit-class">Class *</FieldLabel>
+                            <Select v-model="form.school_class_id">
+                                <SelectTrigger id="edit-class" class="bg-background">
+                                    <SelectValue placeholder="Select a class" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem v-for="classroom in classrooms" :key="classroom.id" :value="classroom.id">
-                                        {{ classroomName(classroom) }}
+                                    <SelectItem v-for="klass in uniqueClasses" :key="klass.id" :value="klass.id">
+                                        {{ klass.name }}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <InputError class="mt-1" :message="errors.class_stream_assignment_id" />
+                            <InputError class="mt-1" :message="errors.school_class_id" />
                         </Field>
-                    </FieldGroup>
 
-                    <FieldGroup>
+                        <Field :data-invalid="errors.stream_id">
+                            <FieldLabel for="edit-stream">Stream *</FieldLabel>
+                            <Select v-model="form.stream_id" :disabled="!form.school_class_id">
+                                <SelectTrigger id="edit-stream" class="bg-background">
+                                    <SelectValue placeholder="Select a stream" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem v-for="stream in filteredStreams" :key="stream.id" :value="stream.id">
+                                        {{ stream.name }}
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <InputError class="mt-1" :message="errors.stream_id" />
+                        </Field>
+
                         <Field :data-invalid="errors.subject_id">
                             <FieldLabel for="edit-subject">Subject *</FieldLabel>
                             <Select v-model="form.subject_id">
@@ -130,7 +170,7 @@ const classroomName = (classroom: Classroom) => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem v-for="subject in subjects" :key="subject.id" :value="subject.id">
-                                        {{ subject.code }} - {{ subject.name }}
+                                        {{ subject.code ? `${subject.code} - ${subject.name}` : subject.name }}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>

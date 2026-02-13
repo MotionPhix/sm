@@ -12,6 +12,7 @@ use App\Models\TeacherAssignment;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -48,19 +49,39 @@ class TeacherAssignmentController extends Controller
     }
 
     /**
-     * Store a newly created teacher assignment.
+     * Store newly created teacher assignments (one per subject).
      */
     public function store(StoreTeacherAssignmentRequest $request): RedirectResponse
     {
-        TeacherAssignment::create([
-            'user_id' => $request->user_id,
-            'class_stream_assignment_id' => $request->class_stream_assignment_id,
-            'subject_id' => $request->subject_id,
-        ]);
+        $classroom = $this->resolveClassroom($request->school_class_id, $request->stream_id);
+
+        $created = 0;
+        $skipped = 0;
+
+        DB::transaction(function () use ($request, $classroom, &$created, &$skipped) {
+            foreach ($request->subject_ids as $subjectId) {
+                $assignment = TeacherAssignment::firstOrCreate([
+                    'user_id' => $request->user_id,
+                    'class_stream_assignment_id' => $classroom->id,
+                    'subject_id' => $subjectId,
+                ]);
+
+                if ($assignment->wasRecentlyCreated) {
+                    $created++;
+                } else {
+                    $skipped++;
+                }
+            }
+        });
+
+        $message = "{$created} teacher assignment(s) created successfully.";
+        if ($skipped > 0) {
+            $message .= " {$skipped} duplicate(s) skipped.";
+        }
 
         return redirect()
             ->route('admin.settings.teacher-assignments.index')
-            ->with('success', 'Teacher assignment created successfully.');
+            ->with('success', $message);
     }
 
     /**
@@ -85,9 +106,11 @@ class TeacherAssignmentController extends Controller
      */
     public function update(UpdateTeacherAssignmentRequest $request, TeacherAssignment $teacherAssignment): RedirectResponse
     {
+        $classroom = $this->resolveClassroom($request->school_class_id, $request->stream_id);
+
         $teacherAssignment->update([
             'user_id' => $request->user_id,
-            'class_stream_assignment_id' => $request->class_stream_assignment_id,
+            'class_stream_assignment_id' => $classroom->id,
             'subject_id' => $request->subject_id,
         ]);
 
@@ -147,5 +170,17 @@ class TeacherAssignmentController extends Controller
         return Subject::where('school_id', $school->id)
             ->orderBy('name')
             ->get(['id', 'name', 'code']);
+    }
+
+    /**
+     * Resolve a ClassStreamAssignment from class + stream for the current academic year.
+     */
+    private function resolveClassroom(int $schoolClassId, int $streamId): ClassStreamAssignment
+    {
+        return ClassStreamAssignment::query()
+            ->where('school_class_id', $schoolClassId)
+            ->where('stream_id', $streamId)
+            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+            ->firstOrFail();
     }
 }
